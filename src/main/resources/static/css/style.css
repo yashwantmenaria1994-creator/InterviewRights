@@ -84,3 +84,76 @@ body {
 .switch-link a:hover {
     text-decoration: underline;
 }
+
+/* Forgot Password */
+.forgot-link {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.forgot-link a {
+    font-size: 13px;
+    color: #6b7280; /* soft gray */
+    text-decoration: none;
+}
+
+.forgot-link a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+.auth-container {
+    width: 350px;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #fff;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.auth-btn:hover {
+    background-color: #2563eb;
+}
+
+.switch-link {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.switch-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch-link a:hover {
+    text-decoration: underline;
+}

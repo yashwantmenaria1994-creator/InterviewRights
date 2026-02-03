@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h2>Interview-Rights Admin</h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <a href="/admin/admin-dashboard.html">Dashboard</a>
+        <a href="/admin/candidate.html">Candidates</a>
+        <a href="/admin/profile.html">Profile</a>
+        <a href="/admin/settings.html">Settings</a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <h3>Welcome Admin 👋</h3>
+        <p>Select option from left menu</p>
+    </div>
+
+</div>
+
+<script>
+fetch('/api/admin/candidates')
+    .then(res => {
+        if (!res.ok) throw new Error("Failed to load");
+        return res.json();
+    })
+    .then(data => {
+        const table = document.getElementById("candidateTable");
+        table.innerHTML = "";
+
+        data.content.forEach((c, index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${c.name}</td>
+                    <td>${c.email}</td>
+                    <td>${c.role}</td>
+                    <td class="${c.active ? 'status-active' : 'status-inactive'}">
+                        ${c.active ? 'Active' : 'Inactive'}
+                    </td>
+                    <td>
+                        <button class="btn btn-edit">Edit</button>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Unable to load candidates");
+    });
+</script>
+</body>
+</html>
