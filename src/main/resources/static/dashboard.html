@@ -1,47 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-	<title>Dashboard</title>
-	<link rel="stylesheet" href="/css/dashboard.css">
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="/admin/css/admin.css">
 </head>
 
 <body>
 
-	<!-- Header -->
+	<!-- HEADER -->
 	<div class="header">
-		<h1>Dashboard</h1>
-		<div class="user-info" id="userEmail">
-		</div>
+		<h2>Interview-Rights Admin</h2>
+
 		<button class="logout-btn" onclick="logout()">Logout</button>
 
 	</div>
 
-	<!-- Main Content -->
-	<div class="dashboard-container">
-		<h2>Welcome</h2>
-		<br>
+	<!-- MAIN -->
+	<div class="container">
 
-		<div class="cards">
-			<div class="card">
-				<h3>Profile</h3>
-				<p>View and update your profile details.</p>
-			</div>
-
-			<div class="card">
-				<h3>Varification</h3>
-				<p>Change password and manage access.</p>
-			</div>
-
-			<div class="card">
-				<h3>Settings</h3>
-				<p>Application preferences and settings.</p>
-			</div>
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<a href="/dashboard.html">Dashboard</a>
+			<a href="/myProfile.html">Profile</a>
 		</div>
-	</div>
 
+		<!-- CONTENT -->
+		<div class="content">
+			<h3>Welcome , <div class="user-info" id="userEmail"> </h3> 
+				</div>
+		</div>
+
+	</div>
 	<script src="/js/dashboard.js"></script>
-	
+
 </body>
 
 </html>

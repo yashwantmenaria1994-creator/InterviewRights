@@ -7,7 +7,7 @@
 
 body {
     height: 100vh;
-    background: linear-gradient(120deg, #4f46e5, #3b82f6);
+    background: linear-gradient(120deg, #1f2937, #1f2937);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,7 +35,7 @@ body {
     display: block;
     margin-bottom: 6px;
     font-size: 14px;
-    color: #374151;
+    color: #1f2937;
 }
 
 .form-group input {
@@ -49,14 +49,14 @@ body {
 
 .form-group input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
+    border-color: #1f2937;
+    box-shadow: 0 0 0 1px #1f2937;
 }
 
 .auth-btn {
     width: 100%;
     padding: 12px;
-    background: #3b82f6;
+    background: #1f2937;
     color: white;
     border: none;
     border-radius: 8px;
@@ -66,7 +66,7 @@ body {
 }
 
 .auth-btn:hover {
-    background: #2563eb;
+    background: #1f2937;
 }
 
 .switch-link {
@@ -76,7 +76,7 @@ body {
 }
 
 .switch-link a {
-    color: #3b82f6;
+    color: #1f2937;
     text-decoration: none;
     font-weight: 500;
 }
@@ -98,7 +98,7 @@ body {
 }
 
 .forgot-link a:hover {
-    color: #3b82f6;
+    color: #1f2937;
     text-decoration: underline;
 }
 
@@ -131,7 +131,7 @@ body {
 .auth-btn {
     width: 100%;
     padding: 10px;
-    background-color: #3b82f6;
+    background-color: #1f2937;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -139,7 +139,7 @@ body {
 }
 
 .auth-btn:hover {
-    background-color: #2563eb;
+    background-color: #1f2937;
 }
 
 .switch-link {
@@ -149,7 +149,7 @@ body {
 }
 
 .switch-link a {
-    color: #3b82f6;
+    color: #1f2937;
     text-decoration: none;
     font-weight: 500;
 }

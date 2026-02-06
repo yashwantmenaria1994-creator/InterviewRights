@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<style>
+	/* spacing helper */
+	.mt-15 {
+		margin-top: 15px;
+		display: block;
+	}
+
+	/* Generate button – small & attractive */
+	.btn-generate {
+		background: linear-gradient(135deg, #334155, #1e40af);
+		color: white;
+		border: none;
+		padding: 7px 14px;
+		font-size: 13px;
+		border-radius: 20px;
+		cursor: pointer;
+		transition: 0.3s;
+	}
+
+	.btn-generate:hover {
+		background: linear-gradient(135deg, #334155, #1e3a8a);
+		transform: scale(1.03);
+	}
+
+	/* Invite link container */
+	.link-box {
+		display: flex;
+		gap: 8px;
+		margin-top: 8px;
+	}
+
+	.link-box textarea {
+		flex: 1;
+		resize: none;
+		font-size: 12px;
+	}
+
+	/* Copy button – compact */
+	.btn-copy {
+		background: #0f172a;
+		color: white;
+		border: none;
+		padding: 6px 12px;
+		font-size: 12px;
+		border-radius: 6px;
+		cursor: pointer;
+	}
+
+	.btn-copy:hover {
+		background: #020617;
+	}
+	
+	/* filter bar */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-bar input,
+.filter-bar select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #cbd5f5;
+    font-size: 13px;
+}
+
+.btn-search {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-search:hover {
+    background: #334155;
+}
+
+/* table card */
+.table-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* table */
+.invite-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.invite-table th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 10px;
+    color: #334155;
+}
+
+.invite-table td {
+    padding: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.invite-table tr:hover {
+    background: #f8fafc;
+}
+
+/* status badge */
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: white;
+    display: inline-block;
+}
+
+.badge.pending {
+    background: #334155;
+}
+
+.badge.used {
+    background: #16a34a;
+}
+
+.badge.expired {
+    background: #dc2626;
+}
+
+/* pagination */
+.page-info {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.page-info button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.page-info button:disabled {
+    background: #e5e7eb;
+    cursor: not-allowed;
+}
+
+.page-info button:not(:disabled) {
+    background: #334155;
+    color: white;
+}
+
+</style>
+
+<body>
+
+	<!-- HEADER -->
+	<div class="header">
+		<h2>Interview-Rights Admin</h2>
+		<div class="user-info" id="userEmail">
+		</div>
+		<button class="logout-btn" onclick="logout()">Logout</button>
+
+	</div>
+
+	<div class="container">
+
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<a href="/admin/admin-dashboard.html">Dashboard</a>
+			<a href="/admin/candidate.html">Candidates</a>
+			<a href="/admin/invite-user.html">Invite</a>
+			<a href="/admin/settings.html">Settings</a>
+		</div>
+
+
+		<!-- CONTENT -->
+		<div class="content">
+
+			<h2>Invite User</h2>
+
+			<div class="form-card">
+				<label>User Email</label>
+				<input type="email" id="email" placeholder="Enter user email">
+
+				<button class="btn-generate" onclick="generateLink()">
+					Generate Invite Link
+				</button>
+
+				<label class="mt-15">Invite Link</label>
+
+				<div class="link-box">
+					<textarea id="inviteLink" rows="2" readonly placeholder="Invite link will appear here"></textarea>
+
+					<button class="btn-copy" onclick="copyLink()">Copy</button>
+				</div>
+			</div>
+
+			<div class="filter-bar">
+    <input type="text" id="searchEmail" placeholder="Search email">
+
+    <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="PENDING">Pending</option>
+        <option value="USED">Used</option>
+        <option value="EXPIRED">Expired</option>
+    </select>
+
+    <button class="btn-search" onclick="loadInvites()">Search</button>
+</div>
+
+<div class="table-card">
+    <table class="invite-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Expiry</th>
+            </tr>
+        </thead>
+
+        <tbody id="inviteTable"></tbody>
+    </table>
+</div>
+
+<div id="pageInfo" class="page-info"></div>
+
+
+		</div>
+	</div>
+	<script src="/admin/js/invite-user.js"></script>
+
+	<script>
+		function copyLink() {
+			const link = document.getElementById("inviteLink");
+			if (!link.value) {
+				alert("Generate link first");
+				return;
+			}
+			link.select();
+			document.execCommand("copy");
+			alert("Invite link copied!");
+		}
+	</script>
+</body>
+
+</html>

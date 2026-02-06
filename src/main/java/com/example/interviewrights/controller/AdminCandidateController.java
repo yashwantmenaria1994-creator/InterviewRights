@@ -26,6 +26,12 @@ public class AdminCandidateController {
 	    @Autowired
 	    private AdminCandidateService service;
 
+	    
+	    @GetMapping("/{id}")
+	    public ResponseEntity<User> getById(@PathVariable UUID id) {
+	        return ResponseEntity.ok(service.getById(id));
+	    }
+	    
 	    // ✅ View All with Pagination + Filter
 	    @GetMapping
 	    public ResponseEntity<Page<CandidateDto>> getCandidates(

@@ -11,5 +11,6 @@ public interface AdminCandidateService {
     Page<CandidateDto> getCandidates(int page, int size, String keyword);
     User updateCandidate(UUID id, User user);
     void deleteCandidate(UUID id);
+	User getById(UUID id);
 }
 

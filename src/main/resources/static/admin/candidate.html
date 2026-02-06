@@ -1,55 +1,61 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/admin/css/admin.css">
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="/admin/css/admin.css">
 </head>
+
 <body>
 
-<!-- HEADER -->
-<div class="header">
-    <h2>Interview-Rights Admin</h2>
-    <button onclick="logout()">Logout</button>
-</div>
+	<!-- HEADER -->
 
-<!-- MAIN -->
-<div class="container">
+	<div class="header">
+		<h2>Interview-Rights Admin</h2>
+		<div class="user-info" id="userEmail">
+		</div>
+		<button class="logout-btn" onclick="logout()">Logout</button>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <a href="/admin/admin-dashboard.html">Dashboard</a>
-        <a href="/admin/candidate.html">Candidates</a>
-        <a href="/admin/profile.html">Profile</a>
-        <a href="/admin/settings.html">Settings</a>
-    </div>
+	</div>
 
-    <!-- CONTENT -->
-    <div class="content">
+	<!-- MAIN -->
+	<div class="container">
 
-    <h2>All Candidates</h2>
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<a href="/admin/admin-dashboard.html">Dashboard</a>
+			<a href="/admin/candidate.html">Candidates</a>
+			<a href="/admin/invite-user.html">Invite</a>
+			<a href="/admin/settings.html">Settings</a>
+		</div>
 
-    <div class="table-container">
-        <table class="admin-table">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
+		<!-- CONTENT -->
+		<div class="content">
 
-            <tbody id="candidateTable">
-            <!-- data via JS -->
-            </tbody>
-        </table>
-    </div>
+			<h2>All Candidates</h2>
 
-</div>
+			<div class="table-container">
+				<table class="admin-table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Role</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+					</thead>
 
-<script src="/admin/js/admin-common.js"></script>
+					<tbody id="candidateTable">
+						<!-- data via JS -->
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+		<script src="/admin/js/admin-common.js"></script>
 </body>
-</html>
 
+</html>

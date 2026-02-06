@@ -45,7 +45,21 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
         existing.setMobile(updatedUser.getMobile());
         existing.setTechnology(updatedUser.getTechnology());
         existing.setExperience(updatedUser.getExperience());
+        
+        existing.setCandidateStatus(updatedUser.getCandidateStatus());
+        existing.setCountryCode(updatedUser.getCountryCode());
+        existing.setDob(updatedUser.getDob());
+        existing.setDrivingLicense(updatedUser.getDrivingLicense());
+        existing.setGender(updatedUser.getGender());
+        existing.setRole(updatedUser.getRole());
 
+        existing.setPostalCode(updatedUser.getPostalCode());
+        existing.setPortfolioUrl(updatedUser.getPortfolioUrl());
+        existing.setLinkedinUrl(updatedUser.getLinkedinUrl());
+        existing.setGithubUrl(updatedUser.getGithubUrl());
+        existing.setAddress2(updatedUser.getAddress2());
+        existing.setAddress1(updatedUser.getAddress1());
+        
         return userRepository.save(existing);
     }
 
@@ -53,6 +67,12 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 	public void deleteCandidate(UUID id) {
       userRepository.deleteById(id);
 	}
+
+	@Override
+	public User getById(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+    }
 
     
 }
