@@ -2,8 +2,13 @@ package com.example.interviewrights.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -42,5 +47,18 @@ public class User extends BaseEntity {
 	private LocalDateTime lastLoginAt;
 	private Integer loginAttempts;
 	private Boolean accountLocked;
+	
+	private String workAuthorization;
+	private String sponsorshipRequired;
+	private String visaType;
+	private LocalDateTime visaExpiry;
+	private String passportNumber;
+	private String citizenshipCountry;
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_From")
+	private User createdFrom;
+	
 
 }

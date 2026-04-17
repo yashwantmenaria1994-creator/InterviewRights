@@ -1,14 +1,13 @@
 package com.example.interviewrights.controller;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.entity.UserInvite;
-import com.example.interviewrights.repository.UserInviteRepository;
-import com.example.interviewrights.repository.UserRepository;
 import com.example.interviewrights.request.InviteRegisterRequest;
 import com.example.interviewrights.request.InviteRequest;
 import com.example.interviewrights.service.InviteService;
@@ -32,14 +29,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private UserInviteRepository inviteRepo;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	@Autowired
-	private UserRepository userRepo;
 	
 	@Autowired
 	private InviteService inviteService;
@@ -58,49 +48,15 @@ public class UserController {
     }
     
     @PostMapping("/invite")
-    public ResponseEntity<String> inviteUser(@RequestBody InviteRequest request) {
-
-        String token = UUID.randomUUID().toString();
-
-        UserInvite invite = new UserInvite();
-        invite.setEmail(request.getEmail());
-        invite.setRole("ROLE_USER");
-        invite.setInviteToken(token);
-        invite.setExpiryTime(LocalDateTime.now().plusHours(24));
-        invite.setUrl("http://localhost:8080/admin/register-invite.html?token=" + token);
-
-        inviteRepo.save(invite);
-
-        String inviteUrl =
-            "http://localhost:8080/admin/register-invite.html?token=" + token;
-
-        return ResponseEntity.ok(inviteUrl);
+    public String inviteUser(@RequestBody InviteRequest request) {
+    	return inviteService.inviteUser(request);
     }
     
     @PostMapping("/invite/register")
     public ResponseEntity<String> registerViaInvite(
             @RequestBody InviteRegisterRequest request) {
-
-        UserInvite invite = inviteRepo.findByInviteToken(request.getToken())
-            .orElseThrow(() -> new RuntimeException("Invalid token"));
-
-        if (invite.isUsed()) {
-            throw new RuntimeException("Already used");
-        }
-
-        User user = new User();
-        user.setEmail(invite.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(invite.getRole());
-        user.setCandidateStatus("invited");
-        user.setActive(true);
-
-        userRepo.save(user);
-
-        invite.setUsed(true);
-        inviteRepo.save(invite);
-
-        return ResponseEntity.ok("Registration successful");
+       return inviteService.registerViaInvite(request);
+    	
     }
 
     @GetMapping("/invite")
@@ -111,4 +67,24 @@ public class UserController {
         return ResponseEntity.ok(inviteService.getAllInvites(email, status, page, size));
     }
     
+    @GetMapping("/validate")
+    public ResponseEntity<String> validate(@RequestParam String token) {
+        return inviteService.validate(token);
+    }
+    
+    @GetMapping("/{token}")
+    public ResponseEntity<User> getByToken(@PathVariable String token) {
+        return ResponseEntity.ok(inviteService.getByToken(token));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteInvite(@PathVariable UUID id) {
+        inviteService.deleteInvite(id);
+        return ResponseEntity.ok("Invite deleted successfully");
+    }
+    
+    @PostMapping("/regenerate")
+    public ResponseEntity<String> regenerate(@RequestParam String email) {
+        return ResponseEntity.ok(inviteService.regenerateInvite(email));
+    }
 }

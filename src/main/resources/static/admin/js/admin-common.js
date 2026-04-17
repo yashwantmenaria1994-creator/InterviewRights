@@ -21,23 +21,27 @@ function authFetch(url, options = {}) {
         }
     }).then(res => {
         if (res.status === 401 || res.status === 403) {
-            logout(); // auto logout if unauthorized
+            logout();
         }
         return res;
     });
 }
 
-// ================= LOAD CANDIDATES =================
+// ================= ON LOAD =================
 document.addEventListener("DOMContentLoaded", function () {
+    loadCandidates();
+    loadDashboardCounts();
+});
+
+// ================= LOAD CANDIDATES =================
+function loadCandidates() {
 
     const tbody = document.getElementById("candidateTable");
-    if (!tbody) return; // safety for other pages
+    if (!tbody) return;
 
     authFetch("/api/admin/candidates")
         .then(res => {
-            if (!res.ok) {
-                throw new Error("HTTP Error: " + res.status);
-            }
+            if (!res.ok) throw new Error(res.status);
             return res.json();
         })
         .then(data => {
@@ -62,16 +66,19 @@ document.addEventListener("DOMContentLoaded", function () {
                                 ? `<button class="btn btn-delete" onclick="deleteCandidate('${user.id}')">Delete</button>` 
                                 : ''
                             }
+                            <button class="btn btn-edit" onclick="openScheduleModal('${user.email}')">
+                                Schedule
+                            </button>
                         </td>
                     </tr>
                 `);
             });
         })
         .catch(err => {
-            console.error("Candidate load failed:", err);
+            console.error(err);
             alert("Unable to load candidates");
         });
-});
+}
 
 // ================= ACTIONS =================
 function editCandidate(id) {
@@ -79,16 +86,85 @@ function editCandidate(id) {
 }
 
 function deleteCandidate(id) {
-    if (!confirm("Are you sure you want to delete this candidate?")) return;
+    if (!confirm("Are you sure?")) return;
 
     authFetch(`/api/admin/candidates/${id}`, {
         method: "DELETE"
     }).then(res => {
         if (res.ok) {
-            alert("Candidate deleted successfully");
-            location.reload();
+            alert("Deleted ✅");
+            loadCandidates();
         } else {
-            alert("Delete failed");
+            alert("Delete failed ❌");
         }
     });
+}
+
+// ================= SCHEDULE MODAL =================
+function openScheduleModal(email) {
+    document.getElementById("scheduleModal").style.display = "block";
+    document.getElementById("candidateEmail").value = email;
+}
+
+function closeScheduleModal() {
+    document.getElementById("scheduleModal").style.display = "none";
+}
+
+// ✅ FIXED FUNCTION
+function scheduleInterview() {
+
+    const data = {
+        email: document.getElementById("candidateEmail").value,
+        date: document.getElementById("interviewDate").value,
+        time: document.getElementById("interviewTime").value,
+        link: document.getElementById("interviewLink").value,
+        expiry: document.getElementById("expiryTime").value
+    };
+
+    if (!data.date || !data.time || !data.link) {
+        alert("Fill all fields");
+        return;
+    }
+
+    authFetch("/api/interview/schedule", {
+        method: "POST",
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error();
+        return res.text();
+    })
+    .then(() => {
+        alert("Interview Scheduled ✅");
+        closeScheduleModal();
+        loadDashboardCounts(); // ✅ correct place
+    })
+    .catch(() => {
+        alert("Error ❌");
+    });
+}
+
+// ================= CLICK OUTSIDE MODAL =================
+window.onclick = function(event) {
+    const modal = document.getElementById("scheduleModal");
+    if (event.target === modal) {
+        closeScheduleModal();
+    }
+};
+
+// ================= DASHBOARD COUNT =================
+function loadDashboardCounts() {
+
+    authFetch("/api/interview/count")
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            document.getElementById("scheduledCount").innerText = data.scheduled || 0;
+            document.getElementById("completedCount").innerText = data.completed || 0;
+        })
+        .catch(err => {
+            console.error(err);
+        });
 }

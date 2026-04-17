@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Interview</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #eef2f7, #dfe6f0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .status {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #888;
+        }
+
+        video, canvas {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #4c7cf3;
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            background: gray;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Interview Verification</h2>
+    <div id="statusText" class="status">Validating link...</div>
+
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <button id="captureBtn" onclick="capture()" disabled>
+        Capture Photo
+    </button>
+
+    <button id="joinBtn" class="btn-primary" disabled onclick="joinInterview()">
+        Join Interview
+    </button>
+
+</div>
+
+<script>
+
+let token = new URLSearchParams(window.location.search).get("token");
+let stream;
+let interviewLink = "";
+
+// ================= VALIDATE TOKEN =================
+function validateToken() {
+
+    fetch("/api/interview/validate?token=" + token)
+    .then(res => {
+        if (!res.ok) throw new Error("Invalid or expired link");
+        return res.json();
+    })
+    .then(data => {
+
+        interviewLink = data.link;
+
+        document.getElementById("statusText").innerHTML =
+            "<span class='success'>Link Verified ✅</span>";
+
+        startCamera();
+
+        document.getElementById("captureBtn").disabled = false;
+    })
+    .catch(err => {
+        document.getElementById("statusText").innerHTML =
+            "<span class='error'>Link Invalid / Expired ❌</span>";
+    });
+}
+
+// ================= START CAMERA =================
+function startCamera() {
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+        stream = s;
+        document.getElementById("video").srcObject = stream;
+    })
+    .catch(err => {
+        alert("Camera permission required");
+    });
+}
+
+// ================= CAPTURE =================
+function capture() {
+
+    const canvas = document.getElementById("canvas");
+    const video = document.getElementById("video");
+
+    canvas.style.display = "block";
+
+    const ctx = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    ctx.drawImage(video, 0, 0);
+
+    const image = canvas.toDataURL("image/png");
+
+    fetch("/api/interview/verify", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            token: token,
+            image: image
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+
+        if (res.success) {
+
+            document.getElementById("statusText").innerHTML =
+                "<span class='success'>Verification Successful ✅</span>";
+
+            document.getElementById("joinBtn").disabled = false;
+
+        } else {
+
+            document.getElementById("statusText").innerHTML =
+                "<span class='error'>Verification Failed ❌</span>";
+        }
+
+    });
+}
+
+// ================= JOIN =================
+function joinInterview() {
+
+    // stop camera
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    // mark completed (optional)
+    fetch("/api/interview/complete?token=" + token, {
+        method: "POST"
+    });
+
+    window.location.href = interviewLink;
+}
+
+// INIT
+validateToken();
+
+</script>
+
+</body>
+</html>

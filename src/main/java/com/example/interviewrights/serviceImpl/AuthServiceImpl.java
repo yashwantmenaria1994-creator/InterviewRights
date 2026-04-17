@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.interviewrights.entity.User;
+import com.example.interviewrights.entity.UserSession;
+import com.example.interviewrights.repository.SessionRepository;
 import com.example.interviewrights.repository.UserRepository;
 import com.example.interviewrights.request.LoginRequest;
 import com.example.interviewrights.request.RegisterRequest;
@@ -31,6 +33,9 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private SessionRepository sessionRepository;
 
 	@Autowired
 	private JwtUtil jwtUtil;
@@ -60,6 +65,16 @@ public class AuthServiceImpl implements AuthService {
 
 		String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
+		// 🧠 SINGLE SESSION LOGIC (IMPORTANT)
+	    UserSession session = sessionRepository.findByUserId(user.getId())
+	            .orElse(new UserSession());
+
+	    session.setUserId(user.getId());
+	    session.setToken(token);
+	    session.setLoginTime(LocalDateTime.now());
+
+	    sessionRepository.save(session); // 🔥 overwrite old session
+		
 		return new LoginResponse(token, user.getEmail(), user.getFirstName(), user.getLastName(), user.getMobile(),user.getRole());
 	}
 

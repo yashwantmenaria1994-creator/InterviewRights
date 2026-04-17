@@ -3,6 +3,7 @@ package com.example.interviewrights.filter;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.interviewrights.entity.User;
+import com.example.interviewrights.entity.UserSession;
+import com.example.interviewrights.repository.SessionRepository;
 import com.example.interviewrights.security.JwtUtil;
 import com.example.interviewrights.service.AuthService;
 
@@ -21,6 +24,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+	@Autowired
+	private SessionRepository sessionRepository;
+	
 	private final JwtUtil jwtUtil;
     private final AuthService authService;
 
@@ -43,13 +49,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             String jwt = authHeader.substring(7);
             String userEmail = jwtUtil.extractUsername(jwt);
+
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 User user = authService.findByEmail(userEmail);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole()))
-                );
+
+                // 🔥 SESSION VALIDATION (IMPORTANT)
+                UserSession session = sessionRepository.findByUserId(user.getId()).orElse(null);
+
+                if (session == null || !session.getToken().equals(jwt)) {
+                    // ❌ Invalid / Old Session → force logout
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
+                // ✅ VALID SESSION → allow
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                user.getEmail(),
+                                null,
+                                List.of(new SimpleGrantedAuthority(user.getRole()))
+                        );
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }

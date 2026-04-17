@@ -52,6 +52,12 @@ public class UserServiceImpl implements UserService {
 	        existing.setAddress2(updatedUser.getAddress2());
 	        existing.setAddress1(updatedUser.getAddress1());
 
+	        existing.setWorkAuthorization(updatedUser.getWorkAuthorization());
+	        existing.setSponsorshipRequired(updatedUser.getSponsorshipRequired());
+	        existing.setVisaType(updatedUser.getVisaType());
+	        existing.setVisaExpiry(updatedUser.getVisaExpiry());
+	        existing.setPassportNumber(updatedUser.getPassportNumber());
+	        existing.setCitizenshipCountry(updatedUser.getCitizenshipCountry());
 	        return userRepository.save(existing);
 	    }
 	

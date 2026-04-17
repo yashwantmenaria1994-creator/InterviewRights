@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.request.CandidateDto;
 import com.example.interviewrights.service.AdminCandidateService;
+import com.example.interviewrights.service.InviteService;
 
 @RestController
 @RequestMapping("/api/admin/candidates")
@@ -26,7 +27,6 @@ public class AdminCandidateController {
 	    @Autowired
 	    private AdminCandidateService service;
 
-	    
 	    @GetMapping("/{id}")
 	    public ResponseEntity<User> getById(@PathVariable UUID id) {
 	        return ResponseEntity.ok(service.getById(id));
@@ -57,5 +57,7 @@ public class AdminCandidateController {
 	        service.deleteCandidate(id);
 	        return ResponseEntity.ok("Candidate deleted successfully");
 	    }
+	    
+	   
 	}
 	

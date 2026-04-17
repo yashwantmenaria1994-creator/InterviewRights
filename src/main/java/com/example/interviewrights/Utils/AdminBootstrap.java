@@ -1,25 +1,24 @@
 package com.example.interviewrights.Utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.repository.UserRepository;
 
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
-public class AdminBootstrap {
+@RequiredArgsConstructor
+public class AdminBootstrap implements ApplicationRunner {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @PostConstruct
-    public void initAdmin() {
+    @Override
+    public void run(ApplicationArguments args) {
 
         if (!userRepository.existsByRole("ROLE_ADMIN")) {
 

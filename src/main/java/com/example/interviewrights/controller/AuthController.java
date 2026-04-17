@@ -1,9 +1,13 @@
 package com.example.interviewrights.controller;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +36,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
     @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+    	Set<String> blacklistedTokens = new HashSet<>();
+        blacklistedTokens.add(token);
         return ResponseEntity.ok("Logged out successfully");
     }
     

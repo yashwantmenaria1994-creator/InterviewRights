@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	Page<User> findByRoleAndTechnologyContainingIgnoreCase(String role, String technology, Pageable pageable);
 
 	boolean existsByRole(String string);
+
+	boolean existsByEmail(String email);
+
+	Page<User> findByCreatedBy(User currentUser, PageRequest of);
+
+	Page<User> findByCreatedFrom(User currentUser, PageRequest of);
 }

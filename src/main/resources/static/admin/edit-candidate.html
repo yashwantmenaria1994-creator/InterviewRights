@@ -1,148 +1,211 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Edit Candidate</title>
-    <link rel="stylesheet" href="/admin/css/admin.css">
+	<title>Edit Candidate</title>
+	<link rel="stylesheet" href="/admin/css/admin.css">
 </head>
+
 <body>
 
-<!-- HEADER -->
-<div class="header">
-    <h2>Interview-Rights Admin</h2>
-    <button onclick="logout()">Logout</button>
-</div>
+	<!-- HEADER -->
+	<div class="header">
+		<h2>Interview-Rights Admin</h2>
+		<button onclick="logout()">Logout</button>
+	</div>
 
-<div class="container">
+	<div class="container">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <a href="/admin/admin-dashboard.html">Dashboard</a>
-        <a href="/admin/candidates.html" class="active">Candidates</a>
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<a href="/admin/admin-dashboard.html">Dashboard</a>
+			<a href="/admin/candidates.html" class="active">Candidates</a>
 			<a href="/admin/invite-user.html">Invite</a>
-        <a href="/admin/settings.html">Settings</a>
-    </div>
+			<a href="/admin/settings.html">Settings</a>
+		</div>
 
-    <!-- CONTENT -->
-   <div class="content">
-    <h3>Edit Candidate</h3>
-    <form id="editCandidateForm">
-        <div class="form-row">
-            <div class="form-group">
-                <label>First Name</label>
-                <input type="text" id="firstName">
-            </div>
-            <div class="form-group">
-                <label>Last Name</label>
-                <input type="text" id="lastName">
-            </div>
-        </div>
+		<!-- CONTENT -->
+		<div class="content">
+			<h3>Edit Candidate</h3>
+			<form id="editCandidateForm">
+				<div class="form-row">
+					<div class="form-group">
+						<label>First Name</label>
+						<input type="text" id="firstName">
+					</div>
+					<div class="form-group">
+						<label>Last Name</label>
+						<input type="text" id="lastName">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email" disabled>
-            </div>
-            <div class="form-group">
-                <label>Mobile</label>
-                <input type="number" id="mobile">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Email</label>
+						<input type="email" id="email" disabled>
+					</div>
+					<div class="form-group">
+						<label>Mobile</label>
+						<input type="number" id="mobile">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Role</label>
-                <select id="role">
-                    <option value="ROLE_USER">USER</option>
-                    <option value="ROLE_ADMIN">ADMIN</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Driving License</label>
-                <input type="text" id="drivingLicense">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Role</label>
+						<select id="role">
+							<option value="ROLE_USER">USER</option>
+							<option value="ROLE_ADMIN">ADMIN</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Driving License</label>
+						<input type="text" id="drivingLicense">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Country Code</label>
-                <input type="text" id="countryCode">
-            </div>
-            <div class="form-group">
-                <label>Gender</label>
-                <select id="gender">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Country Code</label>
+						<input type="text" id="countryCode">
+					</div>
+					<div class="form-group">
+						<label>Gender</label>
+						<select id="gender">
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" id="dob">
-            </div>
-            <div class="form-group">
-                <label>Address 1</label>
-                <input type="text" id="address1">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Date of Birth</label>
+						<input type="date" id="dob">
+					</div>
+					<div class="form-group">
+						<label>Address 1</label>
+						<input type="text" id="address1">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Address 2</label>
-                <input type="text" id="address2">
-            </div>
-            <div class="form-group">
-                <label>Postal Code</label>
-                <input type="text" id="postalCode">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Address 2</label>
+						<input type="text" id="address2">
+					</div>
+					<div class="form-group">
+						<label>Postal Code</label>
+						<input type="text" id="postalCode">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Technology</label>
-                <input type="text" id="technology">
-            </div>
-            <div class="form-group">
-                <label>Experience (Years)</label>
-                <input type="number" id="experience">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Technology</label>
+						<input type="text" id="technology">
+					</div>
+					<div class="form-group">
+						<label>Experience (Years)</label>
+						<input type="number" id="experience">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Candidate Status</label>
-                <input type="text" id="candidateStatus">
-            </div>
-            <div class="form-group">
-                <label>LinkedIn URL</label>
-                <input type="url" id="linkedinUrl">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Candidate Status</label>
+						<input type="text" id="candidateStatus">
+					</div>
+					<div class="form-group">
+						<label>LinkedIn URL</label>
+						<input type="url" id="linkedinUrl">
+					</div>
+				</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>GitHub URL</label>
-                <input type="url" id="githubUrl">
-            </div>
-            <div class="form-group">
-                <label>Portfolio URL</label>
-                <input type="url" id="portfolioUrl">
-            </div>
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>GitHub URL</label>
+						<input type="url" id="githubUrl">
+					</div>
+					<div class="form-group">
+						<label>Portfolio URL</label>
+						<input type="url" id="portfolioUrl">
+					</div>
+				</div>
 
-        <div class="form-group">
-            <label>Upload Resume</label>
-            <input type="file" id="uploadResume">
-        </div>
+				<div class="form-row">
+					<div class="form-group">
+						<label>Are you legally authorized to work?</label>
+						<select id="workAuthorization" required>
+							<option value="">Select</option>
+							<option value="US_CITIZEN">Citizen</option>
+							<option value="PERMANENT_RESIDENT">Green Card Holder</option>
+							<option value="VISA_HOLDER">Visa Holder</option>
+							<option value="NOT_AUTHORIZED">Not Authorized</option>
+						</select>
+					</div>
 
-        <button type="button" class="btn-primary" onclick="updateCandidate()">Update</button>
-    </form>
-</div>
+					<div class="form-group">
+						<label>Will you require sponsorship in future?</label>
+						<select id="sponsorshipRequired" required>
+							<option value="">Select</option>
+							<option value="YES">Yes</option>
+							<option value="NO">No</option>
+						</select>
+					</div>
+				</div>
 
-</div>
+				<div id="visaSection" style="display:none">
 
-<script src="/admin/js/edit-candidate.js"></script>
+					<div class="form-row">
+						<div class="form-group">
+							<label>Visa Type</label>
+							<select id="visaType">
+								<option value="">Select</option>
+								<option value="H1B">H1B</option>
+								<option value="L1">L1</option>
+								<option value="F1">F1</option>
+								<option value="OPT">OPT</option>
+								<option value="CPT">CPT</option>
+								<option value="B1_B2">B1/B2</option>
+								<option value="OTHER">Other</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Visa Expiry Date</label>
+							<input type="date" id="visaExpiry">
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="form-group">
+							<label>Passport Number</label>
+							<input type="text" id="passportNumber">
+						</div>
+
+						<div class="form-group">
+							<label>Country of Citizenship</label>
+							<input type="text" id="citizenshipCountry">
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="form-group">
+					<label>Upload Resume</label>
+					<input type="file" id="uploadResume">
+				</div>
+
+				<button type="button" class="btn-primary" onclick="updateCandidate()">Update</button>
+			</form>
+		</div>
+
+	</div>
+
+	<script src="/admin/js/edit-candidate.js"></script>
 </body>
+
 </html>

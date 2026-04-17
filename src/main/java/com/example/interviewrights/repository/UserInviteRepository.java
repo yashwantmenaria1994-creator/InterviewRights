@@ -10,13 +10,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import com.example.interviewrights.entity.User;
 import com.example.interviewrights.entity.UserInvite;
 
 public interface UserInviteRepository extends JpaRepository<UserInvite, UUID>, JpaSpecificationExecutor <UserInvite> {
 
     Optional<UserInvite> findByInviteToken(String inviteToken);
 
-    Optional<UserInvite> findByEmail(String email);
+    Optional<UserInvite> findByEmailAndInvitedBy(String email, User invitedBy);
     
     List<UserInvite> findAllByOrderByCreatedAtDesc();
 
@@ -24,4 +25,6 @@ public interface UserInviteRepository extends JpaRepository<UserInvite, UUID>, J
     	    Specification<UserInvite> filter,
     	    Pageable pageable
     	);
+
+	void deleteById(UUID id);
 }

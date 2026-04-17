@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data
@@ -12,6 +14,12 @@ public class UserInvite extends BaseEntity{
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    private String firstName;
+
+    private String lastName;
+
+    private Long mobile;
 
     private String role = "ROLE_USER"; // ROLE_USER / ROLE_ADMIN
 
@@ -25,4 +33,8 @@ public class UserInvite extends BaseEntity{
     private LocalDateTime expiryTime;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @ManyToOne
+    @JoinColumn(name = "invited_by")
+    private User invitedBy;
 }

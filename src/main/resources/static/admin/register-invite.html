@@ -1,6 +1,482 @@
-<h2>Complete Registration</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-<input type="password" id="password" placeholder="Set Password">
-<input type="password" id="confirm">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Invite User</title>
 
-<button onclick="register()">Register</button>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		body {
+			min-height: 100vh;
+			background: linear-gradient(135deg, #0f172a, #1e293b);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 40px 15px;
+		}
+
+		/* Glass Container */
+		.container {
+			width: 100%;
+			max-width: 1100px;
+			background: rgba(255, 255, 255, 0.95);
+			backdrop-filter: blur(20px);
+			padding: 40px;
+			border-radius: 18px;
+			box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+			animation: fadeIn 0.5s ease-in-out;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		h2 {
+			text-align: center;
+			font-weight: 600;
+			font-size: 26px;
+			margin-bottom: 35px;
+			color: #0f172a;
+		}
+
+		.form-row {
+			display: flex;
+			gap: 25px;
+			margin-bottom: 22px;
+		}
+
+		.form-group {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		label {
+			font-size: 13px;
+			font-weight: 500;
+			margin-bottom: 6px;
+			color: #475569;
+		}
+
+		input,
+		select {
+			padding: 12px 14px;
+			border-radius: 10px;
+			border: 1px solid #e2e8f0;
+			font-size: 14px;
+			transition: all 0.3s ease;
+			background: #f8fafc;
+		}
+
+		input:focus,
+		select:focus {
+			border-color: #6366f1;
+			background: white;
+			box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+			outline: none;
+		}
+
+		input:disabled {
+			background: #e2e8f0;
+			cursor: not-allowed;
+		}
+
+		/* Premium Submit Button */
+		.btn-primary {
+			width: 35%;
+			padding: 14px;
+			border: none;
+			border-radius: 12px;
+			background: linear-gradient(135deg, #6366f1, #4f46e5);
+			color: white;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			margin-top: 25px;
+			transition: 0.3s ease;
+
+			display: block;
+			margin-left: auto;
+			/* 👈 This moves button to right */
+		}
+
+		.btn-primary:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+		}
+
+		/* Modal Design */
+		.modal {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(15, 23, 42, 0.7);
+			backdrop-filter: blur(6px);
+			justify-content: center;
+			align-items: center;
+			animation: fadeIn 0.3s ease;
+		}
+
+		.modal-content {
+			background: white;
+			padding: 30px;
+			width: 380px;
+			border-radius: 16px;
+			text-align: center;
+			box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+		}
+
+		.modal-content h3 {
+			font-size: 20px;
+			margin-bottom: 12px;
+			color: #dc2626;
+		}
+
+		.modal-content p {
+			font-size: 14px;
+			color: #475569;
+			margin-bottom: 20px;
+		}
+
+		.modal-content button {
+			background: linear-gradient(135deg, #ef4444, #dc2626);
+			border: none;
+			color: white;
+			padding: 10px 25px;
+			border-radius: 30px;
+			font-size: 14px;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		.modal-content button:hover {
+			transform: scale(1.05);
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.form-row {
+				flex-direction: column;
+			}
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="container">
+		<h2>Interview-Rights Candidate Details Form</h2>
+
+		<form id="editCandidateForm" onsubmit="submitForm(event)">
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>First Name</label>
+					<input type="text" id="firstName" required>
+				</div>
+				<div class="form-group">
+					<label>Last Name</label>
+					<input type="text" id="lastName" required>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Email</label>
+					<input type="email" id="email" disabled required>
+				</div>
+				<div class="form-group">
+					<label>Country Code</label>
+					<select id="countryCode" required>
+						<option value="">Select Code</option>
+						<option value="+91">🇮🇳 +91 (India)</option>
+						<option value="+1">🇺🇸 +1 (USA)</option>
+						<option value="+44">🇬🇧 +44 (UK)</option>
+						<option value="+61">🇦🇺 +61 (Australia)</option>
+						<option value="+971">🇦🇪 +971 (UAE)</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Mobile</label>
+					<input type="number" id="mobile" required>
+				</div>
+				<div class="form-group">
+					<label>Date of Birth</label>
+					<input type="date" id="dob" required>
+				</div>
+
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Gender</label>
+					<select id="gender" required>
+						<option value="">Select Gender</option>
+						<option value="MALE">Male</option>
+						<option value="FEMALE">Female</option>
+						<option value="OTHER">Other</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>Technology</label>
+					<input type="text" id="technology" required>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Experience (Years)</label>
+					<input type="number" id="experience" required>
+				</div>
+				<div class="form-group">
+					<label>Notice Period</label>
+					<input type="text" id="noticePeriod" required>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>LinkedIn URL</label>
+					<input type="text" id="linkedinUrl">
+				</div>
+				<div class="form-group">
+					<label>Github Url</label>
+					<input type="text" id="githubUrl">
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Address 1</label>
+					<input type="text" id="address1">
+				</div>
+				<div class="form-group">
+					<label>Address 2</label>
+					<input type="text" id="address2">
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Postal Code</label>
+					<input type="number" id="postalCode">
+				</div>
+				<div class="form-group">
+					<label>Driving License</label>
+					<input type="text" id="drivingLicense">
+				</div>
+
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label>Are you legally authorized to work?</label>
+					<select id="workAuthorization" required>
+						<option value="">Select</option>
+						<option value="US_CITIZEN">Citizen</option>
+						<option value="PERMANENT_RESIDENT">Green Card Holder</option>
+						<option value="VISA_HOLDER">Visa Holder</option>
+						<option value="NOT_AUTHORIZED">Not Authorized</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label>Will you require sponsorship in future?</label>
+					<select id="sponsorshipRequired" required>
+						<option value="">Select</option>
+						<option value="YES">Yes</option>
+						<option value="NO">No</option>
+					</select>
+				</div>
+			</div>
+
+			<div id="visaSection" style="display:none">
+
+				<div class="form-row">
+					<div class="form-group">
+						<label>Visa Type</label>
+						<select id="visaType">
+							<option value="">Select</option>
+							<option value="H1B">H1B</option>
+							<option value="L1">L1</option>
+							<option value="F1">F1</option>
+							<option value="OPT">OPT</option>
+							<option value="CPT">CPT</option>
+							<option value="B1_B2">B1/B2</option>
+							<option value="OTHER">Other</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label>Visa Expiry Date</label>
+						<input type="date" id="visaExpiry">
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label>Passport Number</label>
+						<input type="text" id="passportNumber">
+					</div>
+
+					<div class="form-group">
+						<label>Country of Citizenship</label>
+						<input type="text" id="citizenshipCountry">
+					</div>
+				</div>
+
+			</div>
+			<div class="form-group">
+				<label>Upload Resume</label>
+				<input type="file" id="uploadResume">
+			</div>
+
+			<button class="btn-primary" type="submit">Submit</button>
+
+			<div id="expiredModal" class="modal">
+				<div class="modal-content">
+					<h3>Link Expired</h3>
+					<p>Link is expired. Please connect to our admin team.</p>
+					<button onclick="closeModal()">OK</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		let isTokenValid = false;
+		const params = new URLSearchParams(window.location.search);
+		const token = params.get("token");
+
+		if (!token) {
+			alert("Invalid link");
+		}
+
+		// Load email from backend
+		fetch(`/api/user/validate?token=${token}`)
+			.then(res => {
+				if (!res.ok) {
+					showExpiredPopup();
+					throw new Error();
+				}
+				isTokenValid = true;
+				return res.json();
+			})
+			.then(data => {
+				isTokenValid = true;
+				document.getElementById("email").value = data.email;
+			})
+			.catch(err => console.log("Validation failed"));
+
+		function showExpiredPopup() {
+			document.getElementById("expiredModal").style.display = "flex";
+
+		}
+
+		function closeModal() {
+			document.getElementById("expiredModal").style.display = "none";
+		}
+
+		fetch(`/api/user/${token}`, {
+			method: "GET",
+			headers: {"Content-Type": "application/json"},
+		})
+			.then(res => res.json())
+			.then(data => {
+				document.getElementById("firstName").value = data.firstName;
+				document.getElementById("lastName").value = data.lastName;
+				document.getElementById("email").value = data.email;
+				document.getElementById("mobile").value = data.mobile;
+				document.getElementById("role").value = data.role;
+				document.getElementById("drivingLicense").value = data.drivingLicense;
+				document.getElementById("countryCode").value = data.countryCode;
+				document.getElementById("gender").value = data.gender;
+				document.getElementById("dob").value = data.dob;
+				document.getElementById("address1").value = data.address1;
+				document.getElementById("address2").value = data.address2;
+				document.getElementById("postalCode").value = data.postalCode;
+				document.getElementById("technology").value = data.technology;
+				document.getElementById("experience").value = data.experience;
+				document.getElementById("candidateStatus").value = data.candidateStatus;
+				document.getElementById("linkedinUrl").value = data.linkedinUrl;
+				document.getElementById("githubUrl").value = data.githubUrl;
+				document.getElementById("uploadResume").value = data.uploadResume;
+				document.getElementById("portfolioUrl").value = data.portfolioUrl;
+			});
+
+
+		function submitForm(event) {
+
+			event.preventDefault();
+
+			if (!isTokenValid) {
+				showExpiredPopup();
+				return;
+			}
+
+			fetch("/api/user/invite/register", {
+				method: "POST",
+				headers: {"Content-Type": "application/json"},
+				body: JSON.stringify({
+					token: token,
+					firstName: firstName.value,
+					lastName: lastName.value,
+					countryCode: countryCode.value,
+					mobile: mobile.value,
+					drivingLicense: drivingLicense.value,
+					gender: gender.value,
+					dob: dob.value,
+					address1: address1.value,
+					address2: address2.value,
+					postalCode: postalCode.value,
+					technology: technology.value,
+					experience: experience.value,
+					linkedinUrl: linkedinUrl.value,
+					githubUrl: githubUrl.value,
+					noticePeriod: noticePeriod.value
+				})
+			})
+				.then(res => {
+					if (!res.ok) throw new Error("Registration failed");
+					return res.text();
+				})
+				.then(msg => alert(msg))
+				.catch(err => alert(err.message));
+		}
+
+		document.getElementById("workAuthorization").addEventListener("change", function () {
+
+			const visaSection = document.getElementById("visaSection");
+
+			if (this.value === "VISA_HOLDER") {
+				visaSection.style.display = "block";
+			} else {
+				visaSection.style.display = "none";
+			}
+
+		});
+
+	</script>
+</body>
+
+</html>
