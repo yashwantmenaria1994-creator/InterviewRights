@@ -41,7 +41,7 @@ public class InterviewServiceImpl implements InterviewService {
 		interview.setStatus("SCHEDULED");
 		interview.setCreatedAt(LocalDateTime.now());
 		interview.setToken(token);
-
+		interview.setInterviewerEmail(req.getInterviewerEmail());
 		// expiry = interview time + minutes
 		LocalDateTime expiry = LocalDateTime.of(interview.getInterviewDate(), interview.getInterviewTime())
 				.plusMinutes(req.getExpiry());
@@ -52,9 +52,12 @@ public class InterviewServiceImpl implements InterviewService {
 
 		repo.save(interview);
 		// 📩 Send Email
-	    String secureLink = "http://localhost:8080/interview.html?token=" + token;
+	    String secureLink = "http://localhost:8080/interview-room.html?role=candidate&room=26&token=" + token;
+	    String interviewerLink = "http://localhost:8080/interview-room.html?role=interviewer&room=26";
+
 		//emailService.sendInterviewMail(req);
 	    emailService.sendInterviewMail(req.getEmail(), secureLink);
+	    emailService.sendInterviewMail(req.getInterviewerEmail(), interviewerLink);
 
 	}
 
@@ -79,6 +82,7 @@ public class InterviewServiceImpl implements InterviewService {
 
 		Map<String, Object> res = new HashMap<>();
 		res.put("email", interview.getCandidateEmail());
+		res.put("interviewId", interview.getId());
 		res.put("link", interview.getInterviewLink());
 
 		return ResponseEntity.ok(res);

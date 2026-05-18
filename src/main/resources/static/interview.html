@@ -1,200 +1,655 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Secure Interview</title>
+	<meta charset="UTF-8">
+	<title>Secure Interview Verification</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <style>
-        body {
-            font-family: Arial;
-            background: linear-gradient(135deg, #eef2f7, #dfe6f0);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+	<style>
+		* {
+			box-sizing: border-box
+		}
 
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
+		body {
+			margin: 0;
+			font-family: Arial, sans-serif;
+			background: linear-gradient(135deg, #eef2f7, #dfe6f0);
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
 
-        h2 {
-            margin-bottom: 10px;
-        }
+		.card {
+			width: 470px;
+			max-width: 92%;
+			background: #fff;
+			padding: 30px;
+			border-radius: 18px;
+			box-shadow: 0 20px 45px rgba(0, 0, 0, .18);
+			text-align: center;
+		}
 
-        .status {
-            font-size: 14px;
-            margin-bottom: 15px;
-            color: #888;
-        }
+		h2 {
+			margin: 0 0 10px;
+		}
 
-        video, canvas {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
+		.status {
+			margin-bottom: 15px;
+			font-size: 14px;
+			font-weight: 600;
+		}
 
-        button {
-            margin-top: 15px;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+		.success {
+			color: #2ecc71;
+		}
 
-        .btn-primary {
-            background: #4c7cf3;
-            color: white;
-        }
+		.error {
+			color: #e74c3c;
+		}
 
-        .btn-primary:disabled {
-            background: gray;
-        }
+		.warning {
+			color: #e67e22;
+		}
 
-        .error {
-            color: red;
-        }
+		video,
+		canvas {
+			width: 100%;
+			border-radius: 14px;
+			margin-top: 12px;
+			box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+		}
 
-        .success {
-            color: green;
-        }
-    </style>
+		button {
+			width: 100%;
+			padding: 12px;
+			margin-top: 14px;
+			border: none;
+			border-radius: 10px;
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.primary {
+			background: #4c7cf3;
+			color: white;
+		}
+
+		.primary:disabled {
+			background: #9aa7c4;
+			cursor: not-allowed;
+		}
+
+		.info-box {
+			margin-top: 12px;
+			background: #f5f7fc;
+			padding: 12px;
+			border-radius: 10px;
+			font-size: 13px;
+			text-align: left;
+		}
+
+		.violation {
+			margin-top: 10px;
+			font-size: 13px;
+			color: #c0392b;
+			font-weight: bold;
+		}
+	</style>
 </head>
 
 <body>
 
-<div class="card">
+	<div class="card">
 
-    <h2>Interview Verification</h2>
-    <div id="statusText" class="status">Validating link...</div>
+		<h2>Interview Verification</h2>
 
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+		<div id="statusText" class="status">
+			Validating secure link...
+		</div>
 
-    <button id="captureBtn" onclick="capture()" disabled>
-        Capture Photo
-    </button>
+		<video id="video" autoplay muted playsinline></video>
 
-    <button id="joinBtn" class="btn-primary" disabled onclick="joinInterview()">
-        Join Interview
-    </button>
+		<canvas id="canvas" style="display:none;"></canvas>
 
-</div>
+		<button id="captureBtn" class="primary" onclick="capture()" disabled>
+			Capture Identity Photo
+		</button>
 
-<script>
+		<button id="joinBtn" class="primary" onclick="joinInterview()" disabled>
+			Join Interview
+		</button>
 
-let token = new URLSearchParams(window.location.search).get("token");
-let stream;
-let interviewLink = "";
+		<div class="info-box">
+			• Stay visible in camera<br>
+			• Do not switch tabs/windows<br>
+			• Multiple violations may end session
+		</div>
 
-// ================= VALIDATE TOKEN =================
-function validateToken() {
+		<div id="violationText" class="violation"></div>
 
-    fetch("/api/interview/validate?token=" + token)
-    .then(res => {
-        if (!res.ok) throw new Error("Invalid or expired link");
-        return res.json();
-    })
-    .then(data => {
+	</div>
 
-        interviewLink = data.link;
+	<script>
 
-        document.getElementById("statusText").innerHTML =
-            "<span class='success'>Link Verified ✅</span>";
+		/* ================= VARIABLES ================= */
 
-        startCamera();
+		let token =
+			new URLSearchParams(window.location.search).get("token");
 
-        document.getElementById("captureBtn").disabled = false;
-    })
-    .catch(err => {
-        document.getElementById("statusText").innerHTML =
-            "<span class='error'>Link Invalid / Expired ❌</span>";
-    });
-}
+		let stream;
+		let interviewLink = "";
+		let interviewId = null;
+		let email = null;
 
-// ================= START CAMERA =================
-function startCamera() {
+		let interviewTerminated = false;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-    .then(s => {
-        stream = s;
-        document.getElementById("video").srcObject = stream;
-    })
-    .catch(err => {
-        alert("Camera permission required");
-    });
-}
+		let tabViolationCount = 0;
+		let faceViolationCount = 0;
 
-// ================= CAPTURE =================
-function capture() {
+		let faceMonitorStarted = false;
 
-    const canvas = document.getElementById("canvas");
-    const video = document.getElementById("video");
 
-    canvas.style.display = "block";
+		/* ================= HELPERS ================= */
 
-    const ctx = canvas.getContext("2d");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+		function setStatus(msg, type) {
+			document.getElementById("statusText").innerHTML =
+				`<span class="${type}">${msg}</span>`;
+		}
 
-    ctx.drawImage(video, 0, 0);
+		function updateViolationText() {
+			document.getElementById("violationText").innerText =
+				`Tab Violations: ${tabViolationCount} | Face Violations: ${faceViolationCount}`;
+		}
 
-    const image = canvas.toDataURL("image/png");
 
-    fetch("/api/interview/verify", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            token: token,
-            image: image
-        })
-    })
-    .then(res => res.json())
-    .then(res => {
+		/* ================= VALIDATE TOKEN ================= */
 
-        if (res.success) {
+		function validateToken() {
 
-            document.getElementById("statusText").innerHTML =
-                "<span class='success'>Verification Successful ✅</span>";
+			fetch("/api/interview/validate?token=" + token)
+				.then(res => {
+					if (!res.ok) throw new Error();
+					return res.json();
+				})
+				.then(data => {
 
-            document.getElementById("joinBtn").disabled = false;
+					interviewLink = data.link;
+					interviewId = data.interviewId;
+					email = data.email;
 
-        } else {
+					setStatus("Secure link verified ✅", "success");
 
-            document.getElementById("statusText").innerHTML =
-                "<span class='error'>Verification Failed ❌</span>";
-        }
+					startCamera();
 
-    });
-}
+					document.getElementById("captureBtn").disabled = false;
 
-// ================= JOIN =================
-function joinInterview() {
+				})
+				.catch(() => {
+					setStatus("Link invalid / expired ❌", "error");
+				});
 
-    // stop camera
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-    }
+		}
 
-    // mark completed (optional)
-    fetch("/api/interview/complete?token=" + token, {
-        method: "POST"
-    });
 
-    window.location.href = interviewLink;
-}
+		/* ================= CAMERA ================= */
 
-// INIT
-validateToken();
+		function startCamera() {
 
-</script>
+			navigator.mediaDevices.getUserMedia({
+				video: true
+			})
+				.then(s => {
+					stream = s;
+					document.getElementById("video").srcObject = s;
 
+					loadFaceModels();
+				})
+				.catch(() => {
+					alert("Camera permission required.");
+				});
+
+		}
+
+
+		/* ================= LOAD FACE MODEL ================= */
+
+		async function loadFaceModels() {
+
+			try {
+
+				if (typeof faceapi === "undefined") {
+					alert("face-api library not loaded");
+					return;
+				}
+
+				await faceapi.nets.tinyFaceDetector
+					.loadFromUri("/models");
+
+				console.log("Model loaded");
+
+				startFaceMonitoring();
+
+			}
+			catch (e) {
+				console.error(e);
+				alert("Face AI failed to load");
+			}
+
+		}
+
+		/* ================= CAPTURE ================= */
+		let heartbeatInterval = null;
+		let verificationDone = false;
+
+		function capture() {
+
+			if (verificationDone) {
+				alert("Already verified");
+				return;
+			}
+
+			const btn = document.getElementById("captureBtn");
+			btn.disabled = true;
+
+			const canvas = document.getElementById("canvas");
+			const video = document.getElementById("video");
+
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+
+			const ctx = canvas.getContext("2d");
+			ctx.drawImage(video, 0, 0);
+
+			const image = canvas.toDataURL("image/png");
+
+			fetch("/api/interview/verify", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					token,
+					image
+				})
+			})
+				.then(r => r.json())
+				.then(res => {
+
+					if (res.success) {
+						let trackingStarted = false;
+
+						if (!trackingStarted) {
+							trackTabSwitch();
+							trackingStarted = true;
+						}
+						verificationDone = true;
+
+						setStatus(
+							"Verification successful ✅",
+							"success"
+						);
+
+						document.getElementById("joinBtn").disabled = false;
+
+						initTrust();
+
+						if (!heartbeatInterval) {
+							startHeartbeat();
+						}
+
+						trackTabSwitch();
+						enableFullScreen();
+
+					} else {
+						btn.disabled = false;
+					}
+
+				});
+
+		}
+
+
+
+		/* ================= TRUST INIT ================= */
+
+		function initTrust() {
+
+			return fetch("/api/trust/init", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					interviewId: interviewId,
+					candidateEmail: email,
+					deviceFingerprint: navigator.userAgent
+				})
+			});
+
+		}
+
+
+		/* ================= HEARTBEAT ================= */
+
+		function startHeartbeat() {
+
+			heartbeatInterval = setInterval(() => {
+
+				if (interviewTerminated) return;
+
+				fetch("/api/trust/heartbeat", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						interviewId: interviewId
+					})
+				})
+					.then(res => {
+						if (!res.ok) {
+							console.error("heartbeat failed");
+						}
+					})
+					.catch(err => {
+						console.error(err);
+					});
+
+			}, 5000);
+
+		}
+
+
+
+		/* ================= TAB SWITCH ================= */
+
+		function trackTabSwitch() {
+
+			let violationCooldown = false;
+
+			function raiseViolation(reason) {
+
+				if (interviewTerminated) return;
+				if (violationCooldown) return;
+
+				violationCooldown = true;
+
+				setTimeout(() => {
+					violationCooldown = false;
+				}, 3000);
+
+				console.log("Violation:", reason);
+
+				logViolation(reason);
+
+				tabViolationCount++;
+				updateViolationText();
+
+				if (tabViolationCount === 1) {
+					alert("Warning 1/2 Tab switch detected");
+				}
+				else if (tabViolationCount === 2) {
+					alert("Final warning");
+				}
+				else if (tabViolationCount >= 3) {
+					terminateInterview();
+				}
+
+			}
+
+
+			/* actual tab hidden */
+			document.addEventListener(
+				"visibilitychange",
+				function () {
+
+					if (document.hidden) {
+						raiseViolation("TAB_SWITCH");
+					}
+
+				});
+
+
+			/* leaving page */
+			window.addEventListener(
+				"pagehide",
+				function () {
+					raiseViolation("PAGE_HIDE");
+				});
+
+
+			/* losing focus */
+			window.addEventListener(
+				"blur",
+				function () {
+
+					/* ignore alert popup false positives */
+					setTimeout(() => {
+						if (
+							!document.hasFocus() &&
+							!document.hidden
+						) {
+							raiseViolation("WINDOW_BLUR");
+						}
+					}, 300);
+
+				});
+
+		}
+
+
+
+		/* ================= FACE MONITORING ================= */
+
+		function startFaceMonitoring() {
+
+			setInterval(async () => {
+
+				if (interviewTerminated) return;
+
+				const video = document.getElementById("video");
+
+				if (!video.videoWidth) return;
+
+				const faces =
+					await faceapi.detectAllFaces(
+						video,
+						new faceapi.TinyFaceDetectorOptions()
+					);
+
+
+				/* No Face */
+				if (faces.length === 0) {
+
+					faceViolationCount++;
+					updateViolationText();
+
+					logViolation("FACE_NOT_VISIBLE");
+
+					if (faceViolationCount === 1) {
+
+						alert(
+							"Warning 1/2\n" +
+							"Face not detected.\n" +
+							"Stay visible."
+						);
+
+					}
+
+					else if (faceViolationCount === 2) {
+
+						alert(
+							"Final Warning\n" +
+							"Face must remain visible."
+						);
+
+					}
+
+					else if (faceViolationCount >= 3) {
+
+						alert(
+							"Interview terminated.\n" +
+							"Repeated face violations."
+						);
+
+						terminateInterview();
+					}
+
+					return;
+				}
+
+
+				/* Multiple Faces */
+				if (faces.length > 1) {
+
+					alert(
+						"Multiple people detected.\n" +
+						"Only candidate should be in frame."
+					);
+
+					logViolation("MULTIPLE_FACES");
+
+				}
+
+
+				/* Face too far */
+				const box = faces[0].box;
+
+				if (box.width < 120) {
+
+					alert(
+						"Face unclear.\n" +
+						"Move closer to camera."
+					);
+
+					logViolation("FACE_UNCLEAR");
+
+				}
+
+			}, 5000);
+
+		}
+
+
+
+		/* ================= LOG VIOLATION ================= */
+
+		function logViolation(reason) {
+
+			console.log(
+				"Sending flag:",
+				reason
+			);
+
+			const data = JSON.stringify({
+				interviewId: interviewId,
+				reason: reason
+			});
+
+			navigator.sendBeacon(
+				"/api/trust/flag",
+				new Blob(
+					[data],
+					{
+						type: "application/json"
+					}
+				)
+			);
+
+		}
+
+
+
+		/* ================= TERMINATE ================= */
+
+		function terminateInterview() {
+
+			interviewTerminated = true;
+
+			if (stream) {
+				stream.getTracks().forEach(
+					t => t.stop()
+				);
+			}
+
+			fetch("/api/trust/terminate", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					interviewId,
+					reason: "SECURITY_VIOLATION"
+				})
+			});
+
+			document.getElementById(
+				"joinBtn"
+			).disabled = true;
+
+			document.getElementById(
+				"captureBtn"
+			).disabled = true;
+
+			setStatus(
+				"Interview terminated",
+				"error"
+			);
+
+			setTimeout(() => {
+				window.location.href =
+					"/interview-terminated.html";
+			}, 1500);
+
+		}
+
+
+
+		/* ================= FULLSCREEN ================= */
+
+		async function enableFullScreen() {
+
+			if (document.documentElement.requestFullscreen) {
+				await document.documentElement.requestFullscreen();
+			}
+
+		}
+
+
+
+		/* ================= JOIN ================= */
+
+		function joinInterview() {
+
+			if (stream) {
+				stream.getTracks().forEach(
+					t => t.stop()
+				);
+			}
+
+			fetch(
+				"/api/interview/complete?token=" + token,
+				{
+					method: "POST"
+				}
+			);
+
+			window.location.href = "/interview-room.html";
+
+		}
+
+
+		/* ================= INIT ================= */
+	</script>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+	<script>
+		window.onload = function () {
+			validateToken();
+		}
+	</script>
 </body>
+
 </html>

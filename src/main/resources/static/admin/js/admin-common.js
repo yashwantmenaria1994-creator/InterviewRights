@@ -118,7 +118,9 @@ function scheduleInterview() {
         date: document.getElementById("interviewDate").value,
         time: document.getElementById("interviewTime").value,
         link: document.getElementById("interviewLink").value,
-        expiry: document.getElementById("expiryTime").value
+        expiry: document.getElementById("expiryTime").value,
+        interviewerEmail: document.getElementById("interviewerEmail").value
+
     };
 
     if (!data.date || !data.time || !data.link) {

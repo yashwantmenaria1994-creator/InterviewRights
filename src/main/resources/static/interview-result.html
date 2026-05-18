@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="UTF-8">
+
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>
+		Interview Result
+	</title>
+
+	<style>
+		body {
+			margin: 0;
+			font-family: Arial;
+			background: #0f172a;
+			color: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+		}
+
+		.card {
+
+			width: 500px;
+			background: #1e293b;
+			padding: 30px;
+			border-radius: 20px;
+			box-shadow:
+				0 10px 30px rgba(0, 0, 0, .4);
+
+		}
+
+		h1 {
+			margin-top: 0;
+			text-align: center;
+		}
+
+		.row {
+
+			display: flex;
+			justify-content: space-between;
+			padding: 14px 0;
+			border-bottom:
+				1px solid rgba(255, 255, 255, .1);
+
+		}
+
+		.pass {
+			color: #22c55e;
+			font-weight: bold;
+		}
+
+		.fail {
+			color: #ef4444;
+			font-weight: bold;
+		}
+
+		.score {
+			font-size: 40px;
+			font-weight: bold;
+			text-align: center;
+			margin: 20px 0;
+		}
+
+		.btn {
+
+			width: 100%;
+			padding: 14px;
+			margin-top: 25px;
+			border: none;
+			border-radius: 12px;
+			background: #2563eb;
+			color: white;
+			font-weight: bold;
+			cursor: pointer;
+
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="card">
+
+		<h1>
+			Interview Report
+		</h1>
+
+		<div class="score" id="scoreBox">
+			0
+		</div>
+
+
+		<div class="row">
+			<span>
+				Final Status
+			</span>
+
+			<span id="status">
+				-
+			</span>
+		</div>
+
+
+		<div class="row">
+			<span>
+				Risk Score
+			</span>
+
+			<span id="risk">
+				0
+			</span>
+		</div>
+
+		<div class="row">
+			<span>
+				Face Match % 
+			</span>
+
+			<span id="facematch">
+				0
+			</span>
+		</div>
+		<div class="row">
+			<span>
+				Tab Violations
+			</span>
+
+			<span id="tab">
+				0
+			</span>
+		</div>
+
+
+		<div class="row">
+			<span>
+				Face Violations
+			</span>
+
+			<span id="face">
+				0
+			</span>
+		</div>
+
+
+		<div class="row">
+			<span>
+				Multiple Face Alerts
+			</span>
+
+			<span id="multi">
+				0
+			</span>
+		</div>
+
+
+		<div class="row">
+			<span>
+				Interview Duration
+			</span>
+
+			<span id="time">
+				0
+			</span>
+		</div>
+
+
+		<button class="btn" onclick="window.close()">
+
+			Close
+
+		</button>
+
+	</div>
+
+
+
+	<script>
+	const params = new URLSearchParams(window.location.search);
+
+	// Read values from URL
+	const score = params.get("score") || 0;
+	const facematch = params.get("facematch") || 0;
+	const tab = params.get("tab") || 0;
+	const face = params.get("face") || 0;
+	const multi = params.get("multi") || 0;
+	const totalSeconds = parseInt(params.get("time") || 0);
+	const pass = params.get("pass") === "true";
+
+	// Convert duration to MM:SS
+	const mins = Math.floor(totalSeconds / 60);
+	const secs = totalSeconds % 60;
+
+	// Set values in UI
+	document.getElementById("scoreBox").innerText = score;
+	document.getElementById("risk").innerText = score;
+	document.getElementById("facematch").innerText =
+		Number(facematch).toFixed(2) + "%";
+	document.getElementById("tab").innerText = tab;
+	document.getElementById("face").innerText = face;
+	document.getElementById("multi").innerText = multi;
+
+	document.getElementById("time").innerText =
+		String(mins).padStart(2, "0") +
+		":" +
+		String(secs).padStart(2, "0");
+
+	// Final status
+	const status = document.getElementById("status");
+	status.innerText = pass ? "PASS" : "FAIL";
+	status.className = pass ? "pass" : "fail";
+</script>
+
+</body>
+
+</html>

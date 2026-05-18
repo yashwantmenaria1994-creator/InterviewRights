@@ -1,0 +1,325 @@
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Interview Results Dashboard</title>
+
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: Arial, sans-serif;
+			background: #0f172a;
+			color: #fff;
+			padding: 24px;
+		}
+
+		h1 {
+			margin: 0 0 20px;
+			font-size: 32px;
+		}
+
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 16px;
+			margin-bottom: 24px;
+		}
+
+		.card {
+			background: #1e293b;
+			border-radius: 16px;
+			padding: 20px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+		}
+
+		.card h3 {
+			margin: 0 0 8px;
+			font-size: 14px;
+			color: #94a3b8;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.card .value {
+			font-size: 32px;
+			font-weight: bold;
+		}
+
+		.green {
+			color: #22c55e;
+		}
+
+		.red {
+			color: #ef4444;
+		}
+
+		.toolbar {
+			display: flex;
+			gap: 12px;
+			margin-bottom: 16px;
+			flex-wrap: wrap;
+		}
+
+		input,
+		select {
+			padding: 10px 12px;
+			border-radius: 10px;
+			border: 1px solid #334155;
+			background: #1e293b;
+			color: #fff;
+			outline: none;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			background: #1e293b;
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+		}
+
+		th,
+		td {
+			padding: 14px 12px;
+			text-align: left;
+			border-bottom: 1px solid #334155;
+			font-size: 14px;
+		}
+
+		th {
+			background: #334155;
+			font-size: 13px;
+			text-transform: uppercase;
+			letter-spacing: 0.4px;
+		}
+
+		tr:hover {
+			background: rgba(255, 255, 255, 0.03);
+		}
+
+		.badge {
+			display: inline-block;
+			padding: 6px 12px;
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: bold;
+		}
+
+		.badge.pass {
+			background: rgba(34, 197, 94, 0.15);
+			color: #22c55e;
+		}
+
+		.badge.fail {
+			background: rgba(239, 68, 68, 0.15);
+			color: #ef4444;
+		}
+
+		.small {
+			font-size: 12px;
+			color: #94a3b8;
+		}
+
+		.empty {
+			text-align: center;
+			padding: 30px;
+			color: #94a3b8;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Interview Results Dashboard</h1>
+
+	<div class="stats">
+		<div class="card">
+			<h3>Total Interviews</h3>
+			<div class="value" id="totalCount">0</div>
+		</div>
+
+		<div class="card">
+			<h3>Passed</h3>
+			<div class="value green" id="passCount">0</div>
+		</div>
+
+		<div class="card">
+			<h3>Failed</h3>
+			<div class="value red" id="failCount">0</div>
+		</div>
+
+		<div class="card">
+			<h3>Pass Rate</h3>
+			<div class="value" id="passRate">0%</div>
+		</div>
+	</div>
+
+	<div class="toolbar">
+		<input type="text" id="searchBox" placeholder="Search by room or candidate" oninput="renderTable()" />
+
+		<select id="statusFilter" onchange="renderTable()">
+			<option value="ALL">All Results</option>
+			<option value="PASS">Pass Only</option>
+			<option value="FAIL">Fail Only</option>
+		</select>
+	</div>
+
+	<table>
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Room</th>
+				<th>Candidate</th>
+				<th>Score</th>
+				<th>Face Match %</th>
+				<th>Tab</th>
+				<th>Face</th>
+				<th>Multiple Faces</th>
+				<th>Duration</th>
+				<th>Reason</th>
+				<th>Status</th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody id="resultsBody">
+			<tr>
+				<td colspan="12" class="empty">Loading interview records...</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<script>
+		let allResults = [];
+
+		async function loadResults() {
+			try {
+				const response = await fetch('/api/trust/results');
+
+				if (!response.ok) {
+					throw new Error('Failed to load interview results');
+				}
+
+				allResults = await response.json();
+
+				updateStats();
+				renderTable();
+			} catch (e) {
+				console.error(e);
+				document.getElementById('resultsBody').innerHTML = `
+          <tr>
+            <td colspan="12" class="empty">Unable to load interview results.</td>
+          </tr>
+        `;
+			}
+		}
+
+		function updateStats() {
+			const total = allResults.length;
+			const passed = allResults.filter(r => r.passed).length;
+			const failed = total - passed;
+			const rate = total === 0 ? 0 : Math.round((passed / total) * 100);
+
+			document.getElementById('totalCount').textContent = total;
+			document.getElementById('passCount').textContent = passed;
+			document.getElementById('failCount').textContent = failed;
+			document.getElementById('passRate').textContent = rate + '%';
+		}
+
+		function renderTable() {
+			const body = document.getElementById('resultsBody');
+			const search = document.getElementById('searchBox').value.toLowerCase().trim();
+			const filter = document.getElementById('statusFilter').value;
+
+			let filtered = allResults.filter(r => {
+				const candidate = (r.candidateEmail || r.candidateEmail || '').toLowerCase();
+				const room = String(r.room || '').toLowerCase();
+
+				const matchesSearch =
+					!search ||
+					candidate.includes(search) ||
+					room.includes(search);
+
+				const matchesFilter =
+					filter === 'ALL' ||
+					(filter === 'PASS' && r.passed) ||
+					(filter === 'FAIL' && !r.passed);
+
+				return matchesSearch && matchesFilter;
+			});
+
+			if (filtered.length === 0) {
+				body.innerHTML = `
+          <tr>
+            <td colspan="12" class="empty">No records found.</td>
+          </tr>
+        `;
+				return;
+			}
+
+			body.innerHTML = filtered
+	.map((r, index) => {
+		const duration = formatDuration(r.interviewDuration || 0);
+		const reason = r.terminateReason || '-';
+		const statusClass = r.passed ? 'pass' : 'fail';
+		const statusText = r.passed ? 'PASS' : 'FAIL';
+		const candidateEmail = r.candidateEmail || '-';
+		const date = formatDate(
+			r.createdAt ||
+			r.createdDate ||
+			r.timestamp
+		);
+
+		return `
+			<tr>
+				<td>${r.id || index + 1}</td>
+				<td>${r.room || '-'}</td>
+				<td>
+					<div>${candidateEmail}</div>
+				</td>
+				<td>${r.riskScore ?? 0}</td>
+				<td>${Number(r.faceSimilarity ?? 0).toFixed(2)}%</td>
+				<td>${r.tabViolations ?? 0}</td>
+				<td>${r.faceViolations ?? 0}</td>
+				<td>${r.multipleFaceViolations ?? 0}</td>
+				<td>${duration}</td>
+				<td>${reason}</td>
+				<td>
+					<span class="badge ${statusClass}">
+						${statusText}
+					</span>
+				</td>
+				<td>${date}</td>
+			</tr>
+		`;
+	})
+	.join('');
+	}
+
+		function formatDuration(seconds) {
+			const mins = Math.floor(seconds / 60);
+			const secs = seconds % 60;
+			return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+		}
+
+		function formatDate(value) {
+			if (!value) return '-';
+
+			const date = new Date(value);
+
+			if (isNaN(date.getTime())) {
+				return value;
+			}
+
+			return date.toLocaleString();
+		}
+
+		loadResults();
+	</script>
+</body>
+
+</html>

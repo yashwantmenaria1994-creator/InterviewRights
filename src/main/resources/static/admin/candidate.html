@@ -26,7 +26,7 @@
 			<a href="/admin/admin-dashboard.html">Dashboard</a>
 			<a href="/admin/candidate.html">Candidates</a>
 			<a href="/admin/invite-user.html">Invite</a>
-			<a href="/admin/settings.html">Settings</a>
+			<a href="/interview-results.html">candidate Result</a>
 		</div>
 
 		<!-- CONTENT -->
@@ -44,7 +44,7 @@
 							<th>Role</th>
 							<th>Status</th>
 							<th>Action</th>
-							
+
 						</tr>
 					</thead>
 
@@ -56,33 +56,36 @@
 
 		</div>
 		<div id="scheduleModal" class="modal">
-    <div class="modal-content">
+			<div class="modal-content">
 
-        <span class="close-btn" onclick="closeScheduleModal()">✖</span>
+				<span class="close-btn" onclick="closeScheduleModal()">✖</span>
 
-        <h3>Schedule Interview</h3>
+				<h3>Schedule Interview</h3>
 
-        <input type="hidden" id="candidateEmail">
+				<input type="hidden" id="candidateEmail">
 
-        <label>Interview Date</label>
-        <input type="date" id="interviewDate">
+				<label>Interview Date</label>
+				<input type="date" id="interviewDate">
 
-        <label>Interview Time</label>
-        <input type="time" id="interviewTime">
+				<label>Interview Time</label>
+				<input type="time" id="interviewTime">
 
-        <label>Google Meet Link</label>
-        <input type="text" id="interviewLink" placeholder="https://meet.google.com/...">
+				<label>Google Meet Link</label>
+				<input type="text" id="interviewLink" placeholder="https://meet.google.com/...">
 
-        <label>Expiry Duration (minutes)</label>
-        <input type="number" id="expiryTime" placeholder="e.g. 60">
+				<label>Expiry Duration (minutes)</label>
+				<input type="number" id="expiryTime" placeholder="e.g. 60">
 
-        <div class="modal-actions">
-            <button class="btn-secondary" onclick="closeScheduleModal()">Cancel</button>
-            <button class="btn-primary" onclick="scheduleInterview()">Schedule</button>
-        </div>
+				<label>Interviewer Email</label>
+				<input type="text" id="interviewerEmail" placeholder="interviewerEmail">
+				
+				<div class="modal-actions">
+					<button class="btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+					<button class="btn-primary" onclick="scheduleInterview()">Schedule</button>
+				</div>
 
-    </div>
-</div>
+			</div>
+		</div>
 		<script src="/admin/js/admin-common.js"></script>
 </body>
 

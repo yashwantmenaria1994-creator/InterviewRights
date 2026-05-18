@@ -4,9 +4,11 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.request.CandidateDto;
+import com.example.interviewrights.request.UserRequest;
 import com.example.interviewrights.service.AdminCandidateService;
 import com.example.interviewrights.service.InviteService;
 
@@ -43,10 +46,10 @@ public class AdminCandidateController {
 	    }
 
 	    // ✅ Update Candidate
-	    @PutMapping("/{id}")
+	    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	    public ResponseEntity<User> update(
 	            @PathVariable UUID id,
-	            @RequestBody User user) {
+	            @ModelAttribute UserRequest user) {
 
 	        return ResponseEntity.ok(service.updateCandidate(id, user));
 	    }

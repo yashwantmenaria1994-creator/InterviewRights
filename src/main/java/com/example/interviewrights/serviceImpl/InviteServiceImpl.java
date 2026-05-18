@@ -39,6 +39,9 @@ public class InviteServiceImpl implements InviteService {
 
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Autowired
+	S3Service s3Service;
 
 	@Override
 	public Page<UserInvite> getAllInvites(String email, String status, int page, int size) {
@@ -133,7 +136,10 @@ public class InviteServiceImpl implements InviteService {
 		user.setGithubUrl(request.getGithubUrl());
 		user.setTechnology(request.getTechnology());
 		user.setRole("ROLE_USER");
-
+		  if (request.getProfilePic() != null && !request.getProfilePic().isEmpty()) {
+	            String profilePicUrl = s3Service.uploadFile(request.getProfilePic());
+	            user.setProfilePic(profilePicUrl);   // S3 URL or object key
+	        }
 		userRepo.save(user);
 
 		invite.setUsed(true);

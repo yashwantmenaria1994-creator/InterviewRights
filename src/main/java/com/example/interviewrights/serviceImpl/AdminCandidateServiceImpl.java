@@ -5,8 +5,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.repository.UserRepository;
 import com.example.interviewrights.request.CandidateDto;
+import com.example.interviewrights.request.UserRequest;
 import com.example.interviewrights.service.AdminCandidateService;
 
 @Service
@@ -22,6 +21,9 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private S3Service s3Service;
+	
 	@Override
 	public Page<CandidateDto> getCandidates(int page, int size, String keyword) {
 
@@ -38,7 +40,7 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 	}
 
 	@Override
-	public User updateCandidate(UUID id, User updatedUser) {
+	public User updateCandidate(UUID id, UserRequest updatedUser) {
 
 		User existing = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Candidate not found"));
 
@@ -68,7 +70,10 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 		existing.setVisaExpiry(updatedUser.getVisaExpiry());
 		existing.setPassportNumber(updatedUser.getPassportNumber());
 		existing.setCitizenshipCountry(updatedUser.getCitizenshipCountry());
-
+		  if (updatedUser.getProfilePic() != null && !updatedUser.getProfilePic().isEmpty()) {
+	            String profilePicUrl = s3Service.uploadFile(updatedUser.getProfilePic());
+	            existing.setProfilePic(profilePicUrl);   // S3 URL or object key
+	        }
 		return userRepository.save(existing);
 	}
 

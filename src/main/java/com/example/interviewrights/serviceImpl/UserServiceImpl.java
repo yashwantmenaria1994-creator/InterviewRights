@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.repository.UserRepository;
+import com.example.interviewrights.request.UserRequest;
 import com.example.interviewrights.service.UserService;
 
 @Service
@@ -14,6 +15,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private S3Service  s3Service;
 	
 	@Override
 	public User getLoggedInUser() {
@@ -27,7 +31,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	 @Override
-	    public User updateLoggedInUser(User updatedUser) {
+	    public User updateLoggedInUser(UserRequest updatedUser) {
 
 	        User existing = getLoggedInUser();
 
@@ -58,6 +62,11 @@ public class UserServiceImpl implements UserService {
 	        existing.setVisaExpiry(updatedUser.getVisaExpiry());
 	        existing.setPassportNumber(updatedUser.getPassportNumber());
 	        existing.setCitizenshipCountry(updatedUser.getCitizenshipCountry());
+	        
+	        if (updatedUser.getProfilePic() != null && !updatedUser.getProfilePic().isEmpty()) {
+	            String profilePicUrl = s3Service.uploadFile(updatedUser.getProfilePic());
+	            existing.setProfilePic(profilePicUrl);   // S3 URL or object key
+	        }
 	        return userRepository.save(existing);
 	    }
 	

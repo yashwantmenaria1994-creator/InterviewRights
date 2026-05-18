@@ -19,6 +19,7 @@ import com.example.interviewrights.entity.User;
 import com.example.interviewrights.entity.UserInvite;
 import com.example.interviewrights.request.InviteRegisterRequest;
 import com.example.interviewrights.request.InviteRequest;
+import com.example.interviewrights.request.UserRequest;
 import com.example.interviewrights.service.InviteService;
 import com.example.interviewrights.service.UserService;
 
@@ -42,7 +43,7 @@ public class UserController {
     
     @PutMapping("/me")
     public ResponseEntity<User> updateMyProfile(
-            @RequestBody User user) {
+            @RequestBody UserRequest user) {
 
         return ResponseEntity.ok(userService.updateLoggedInUser(user));
     }

@@ -2,6 +2,8 @@ package com.example.interviewrights.request;
 
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -13,7 +15,7 @@ public class InviteRegisterRequest {
 	private String role;
 	private String firstName;
 	private String lastName;
-	private String profilePic;
+	private MultipartFile profilePic;
 	private String drivingLicense;
 	private String countryCode;
 	private String gender;

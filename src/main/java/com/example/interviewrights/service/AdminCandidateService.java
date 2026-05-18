@@ -6,10 +6,11 @@ import org.springframework.data.domain.Page;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.request.CandidateDto;
+import com.example.interviewrights.request.UserRequest;
 
 public interface AdminCandidateService {
     Page<CandidateDto> getCandidates(int page, int size, String keyword);
-    User updateCandidate(UUID id, User user);
+    User updateCandidate(UUID id, UserRequest user);
     void deleteCandidate(UUID id);
 	User getById(UUID id);
 }

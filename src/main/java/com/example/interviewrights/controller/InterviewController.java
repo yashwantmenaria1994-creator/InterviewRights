@@ -1,5 +1,6 @@
 package com.example.interviewrights.controller;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -26,90 +27,93 @@ import com.example.interviewrights.service.InterviewService;
 @RequestMapping("/api/interview")
 public class InterviewController {
 
-    @Autowired
-    private InterviewService service;
-    
-    @Autowired
-    private InterviewRepository repo;
+	@Autowired
+	private InterviewService service;
 
-    @PostMapping("/schedule")
-    public ResponseEntity<?> schedule(@RequestBody InterviewRequest req) {
-        service.scheduleInterview(req);
-        return ResponseEntity.ok("Interview Scheduled");
-    }
-    
-    @GetMapping("/count")
-    public Map<String, Long> getCounts() {
-        Map<String, Long> map = new HashMap<>();
+	@Autowired
+	private InterviewRepository repo;
 
-        map.put("scheduled", repo.countByStatus("SCHEDULED"));
-        map.put("completed", repo.countByStatus("COMPLETED"));
+	@PostMapping("/schedule")
+	public ResponseEntity<?> schedule(@RequestBody InterviewRequest req) {
+		service.scheduleInterview(req);
+		return ResponseEntity.ok("Interview Scheduled");
+	}
 
-        return map;
-    }
-    
-    @GetMapping("/validate")
-    public ResponseEntity<?> validate(@RequestParam String token) {
-    	 return service.validateInterview(token);
+	@GetMapping("/count")
+	public Map<String, Long> getCounts() {
+		Map<String, Long> map = new HashMap<>();
 
-    }
-    
-    @PostMapping("/complete")
-    public ResponseEntity<?> complete(@RequestParam String token) {
-    	 return service.validateInterview(token);
+		map.put("scheduled", repo.countByStatus("SCHEDULED"));
+		map.put("completed", repo.countByStatus("COMPLETED"));
 
-    }
-    
-    @PostMapping("/verify")
-    public ResponseEntity<?> verify(@RequestBody VerifyRequest req) {
+		return map;
+	}
 
-        Optional<InterviewSchedule> optional = repo.findByToken(req.getToken());
+	@GetMapping("/validate")
+	public ResponseEntity<?> validate(@RequestParam String token) {
+		return service.validateInterview(token);
 
-        if (optional.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("success", false));
-        }
+	}
 
-        InterviewSchedule interview = optional.get();
+	@PostMapping("/complete")
+	public ResponseEntity<?> complete(@RequestParam String token) {
+		return service.validateInterview(token);
 
-        // expiry check
-        if (LocalDateTime.now().isAfter(interview.getExpiryTime())) {
-            interview.setStatus("EXPIRED");
-            repo.save(interview);
+	}
 
-            return ResponseEntity.badRequest().body(Map.of("success", false));
-        }
+	@PostMapping("/verify")
+	public ResponseEntity<?> verify(@RequestBody VerifyRequest req) {
 
-        // ✅ save image
-        String filePath = saveImage(req.getImage(), interview.getToken());
+		Optional<InterviewSchedule> optional = repo.findByToken(req.getToken());
 
-        // ✅ store path in DB
-        interview.setImagePath(filePath);
+		if (optional.isEmpty()) {
+			return ResponseEntity.badRequest().body(Map.of("success", false));
+		}
 
-        repo.save(interview);
+		InterviewSchedule interview = optional.get();
 
-        return ResponseEntity.ok(Map.of("success", true));
-    }
-    
-    private String saveImage(String base64Image, String token) {
-        try {
+		// expiry check
+		if (LocalDateTime.now().isAfter(interview.getExpiryTime())) {
+			interview.setStatus("EXPIRED");
+			repo.save(interview);
 
-            // remove prefix
-            String base64 = base64Image.split(",")[1];
+			return ResponseEntity.badRequest().body(Map.of("success", false));
+		}
 
-            byte[] imageBytes = Base64.getDecoder().decode(base64);
+		// ✅ save image
+		String filePath = saveImage(req.getImage(), interview.getToken());
 
-            String filePath = "uploads/" + token + ".png";
+		// ✅ store path in DB
+		interview.setImagePath(filePath);
 
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(imageBytes);
-            fos.close();
+		repo.save(interview);
 
-            return filePath;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+		return ResponseEntity.ok(Map.of("success", true));
+	}
 
-    }
+	private String saveImage(String base64Image, String token) {
+		try {
+			String base64 = base64Image.split(",")[1];
+			byte[] imageBytes = Base64.getDecoder().decode(base64);
 
+			String dirPath = System.getProperty("user.dir") + "/uploads";
+			File dir = new File(dirPath);
+
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+
+			String filePath = dirPath + "/" + token + ".png";
+
+			try (FileOutputStream fos = new FileOutputStream(filePath)) {
+				fos.write(imageBytes);
+			}
+
+			return filePath;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

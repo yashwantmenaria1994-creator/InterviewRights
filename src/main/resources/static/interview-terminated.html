@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Interview Terminated</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: Arial, sans-serif;
+			background:
+				linear-gradient(135deg,
+					#0f172a,
+					#1e293b);
+			overflow: hidden;
+		}
+
+		.card {
+			width: 520px;
+			max-width: 92%;
+			background: white;
+			border-radius: 25px;
+			padding: 50px 40px;
+			text-align: center;
+			box-shadow:
+				0 25px 60px rgba(0, 0, 0, .35);
+			animation: fadeIn .8s ease;
+		}
+
+		.icon {
+			width: 110px;
+			height: 110px;
+			margin: auto;
+			border-radius: 50%;
+			background: #fff1f0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 58px;
+			color: #e74c3c;
+			box-shadow:
+				0 0 0 12px rgba(231, 76, 60, .08);
+			margin-bottom: 25px;
+		}
+
+		h1 {
+			font-size: 34px;
+			margin-bottom: 15px;
+			color: #1f2937;
+		}
+
+		.sub {
+			font-size: 18px;
+			color: #dc2626;
+			font-weight: bold;
+			margin-bottom: 22px;
+		}
+
+		.message {
+			background: #f8fafc;
+			padding: 20px;
+			border-radius: 14px;
+			text-align: left;
+			line-height: 1.7;
+			font-size: 15px;
+			color: #374151;
+			margin-bottom: 30px;
+		}
+
+		.reason {
+			background: #fff5f5;
+			border-left: 5px solid #ef4444;
+			padding: 16px;
+			border-radius: 10px;
+			margin-bottom: 25px;
+			font-weight: 600;
+			color: #b91c1c;
+		}
+
+		.btn {
+			display: block;
+			width: 100%;
+			padding: 14px;
+			border: none;
+			border-radius: 12px;
+			font-size: 16px;
+			font-weight: bold;
+			cursor: pointer;
+			margin-top: 12px;
+		}
+
+		.primary {
+			background: #4f7cff;
+			color: white;
+		}
+
+		.secondary {
+			background: #eef2ff;
+			color: #334155;
+		}
+
+		.footer {
+			margin-top: 25px;
+			font-size: 13px;
+			color: #64748b;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform:
+					translateY(40px);
+			}
+
+			to {
+				opacity: 1;
+				transform:
+					translateY(0);
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+
+	<div class="card">
+
+		<div class="icon">
+			⚠
+		</div>
+
+		<h1>
+			Interview Terminated
+		</h1>
+
+		<div class="sub">
+			Security Policy Violation Detected
+		</div>
+
+
+		<div class="reason">
+			Session ended due to repeated
+			monitoring violations.
+		</div>
+
+
+		<div class="message">
+
+			Possible reasons:
+			<br><br>
+
+			• Multiple tab switching detected<br>
+			• Candidate not visible on camera<br>
+			• Multiple faces detected<br>
+			• Fullscreen exited repeatedly<br>
+			• Risk threshold exceeded
+
+		</div>
+
+
+		<button class="btn primary" onclick="contactSupport()">
+			Contact Support
+		</button>
+
+
+		<button class="btn secondary" onclick="goHome()">
+			Exit Portal
+		</button>
+
+
+		<div class="footer">
+			Reference ID:
+			<span id="refId">
+				SEC-2026-1001
+			</span>
+		</div>
+
+	</div>
+
+
+	<script>
+
+		document.getElementById(
+			"refId"
+		).innerText =
+			"SEC-" + Math.floor(
+				1000 + Math.random() * 9000
+			);
+
+
+		function goHome() {
+			window.location.href = "/";
+		}
+
+		function contactSupport() {
+
+			alert(
+				"Please contact HR or Interview Support."
+			);
+
+		}
+
+	</script>
+	<script>
+
+		/* prevent back */
+		history.pushState(
+			null,
+			null,
+			location.href
+		);
+
+		window.onpopstate = function () {
+			history.go(1);
+		};
+
+
+		/* disable refresh reopen cache */
+		window.onload = function () {
+
+			if (
+				performance.navigation.type === 2
+			) {
+				window.location.replace(
+					"/interview-terminated.html"
+				);
+			}
+
+		};
+
+
+		document.getElementById(
+			"refId"
+		).innerText =
+			"SEC-" + Math.floor(
+				1000 + Math.random() * 9000
+			);
+
+		function goHome() {
+			window.location.replace("/");
+		}
+
+		function contactSupport() {
+			alert(
+				"Please contact HR support."
+			);
+		}
+
+	</script>
+
+
+</body>
+
+</html>

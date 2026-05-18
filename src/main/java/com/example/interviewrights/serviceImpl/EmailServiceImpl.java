@@ -120,4 +120,24 @@ public class EmailServiceImpl implements EmailService {
 
 	    mailSender.send(message);
 	}
+	
+	public void sendInterviewMailForInterviewer(String email, String link) {
+
+	    SimpleMailMessage message = new SimpleMailMessage();
+
+	    message.setTo(email);
+	    message.setSubject("Interview Invitation");
+
+	    message.setText(
+	        "Dear Interviewer,\n\n" +
+	        "Your interview is scheduled.\n\n" +
+	        "Click below to join (secure link):\n" +
+	        link + "\n\n" +
+	        "Note: Link will expire automatically.\n\n" +
+	        "Best Regards"
+	    );
+
+	    mailSender.send(message);
+	}
+	
 }

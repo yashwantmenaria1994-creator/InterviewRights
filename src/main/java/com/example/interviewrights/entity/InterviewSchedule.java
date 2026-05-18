@@ -34,4 +34,6 @@ public class InterviewSchedule {
     private String imagePath; // 👈 ADD THIS
 
     private LocalDateTime createdAt;
+    private String interviewerEmail;
+
 }

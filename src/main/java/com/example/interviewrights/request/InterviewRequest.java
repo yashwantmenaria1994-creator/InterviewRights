@@ -9,4 +9,6 @@ public class InterviewRequest {
     private String time;
     private String link;
     private Integer expiry;
+    private String interviewerEmail;
+
 }

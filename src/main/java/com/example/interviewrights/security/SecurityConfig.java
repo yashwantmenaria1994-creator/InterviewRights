@@ -23,45 +23,29 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtFilter) throws Exception {
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						auth -> auth
-						.requestMatchers(
-							    "/api/auth/login",
-							    "/api/auth/register",
-							    "/api/auth/forgot-password",
-							    "/api/auth/reset-password",
-							    "/api/user/invite/register/**",
-							    "/api/auth/invite",
-							    "/api/user/validate",
-							    "/api/interview/validate",
-							    "/api/interview/verify",
-							    "/api/user/**",
-							    "/login.html",
-							    "/interview.html",
-							    "/register.html",
-							    "/dashboard.html",
-							    "/forgot-password.html",
-							    "/reset-password.html",
-							    "/admin/admin-dashboard.html",
-							    "/admin/candidate.html",
-							    "/admin/edit-candidate.html",
-							    "/admin/invite-user.html",
-							    "/admin/register-invite.html",
-							    "/myProfile.html",
-							    "/admin/css/**",
-							    "/css/**",
-							    "/admin/js/**",
-							    "/js/**"
-							    ).permitAll()
-						//.requestMatchers("/admin/admin-dashboard.html").hasAnyRole("ADMIN", "ADMIN_USER")
-				       // .requestMatchers("/admin/**").hasAnyRole("ADMIN", "ADMIN_USER")
-				       // .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "ADMIN_USER")
-				      //  .requestMatchers("/dashboard.html").authenticated()
-				        .requestMatchers("/api/**").authenticated())
-				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/forgot-password",
+						"/api/auth/reset-password", "/api/user/invite/register/**", "/api/auth/invite",
+						"/api/user/validate", "/api/interview/validate", "/api/interview/verify", "/api/trust/init",
+						"/api/trust/flag", "/api/trust/heartbeat", "/api/interview/complete", "/api/trust/terminate",
+						"/api/user/**", "/login.html", "/interview.html", "/register.html", "/dashboard.html",
+						"/forgot-password.html", "/reset-password.html", "/admin/admin-dashboard.html",
+						"/admin/candidate.html", "/admin/edit-candidate.html", "/admin/invite-user.html",
+						"/admin/register-invite.html", "/myProfile.html", "/admin/css/**", "/css/**", "/js/**",
+						"/admin/js/**", "/models/**", "interview-room.html", "interview-terminated.html",
+						"/topic/offer", "/topic/answer", "/topic/ice", "/signal","/api/trust/results","interview-results.html","/api/trust/finish","/api/face/verify")
+				.permitAll().requestMatchers("/signal/**").permitAll()
 
-		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+				.requestMatchers("/topic/**").permitAll()
+
+				.requestMatchers("/app/**").permitAll()
+
+				.requestMatchers("/api/**").authenticated()
+
+				.anyRequest().permitAll())
+
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
