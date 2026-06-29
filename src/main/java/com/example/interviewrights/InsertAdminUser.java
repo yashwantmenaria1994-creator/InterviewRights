@@ -4,39 +4,40 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.UUID;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.interviewrights.entity.User;
+import com.example.interviewrights.repository.UserRepository;
+
+@Configuration
 public class InsertAdminUser {
 
-    public static void main(String[] args) {
+	 @Bean
+	    CommandLineRunner createSuperAdmin(UserRepository userRepository,
+	                                       PasswordEncoder passwordEncoder) {
 
-        String url = "jdbc:mysql://mysqldb.c2j2i6qmglma.us-east-1.rds.amazonaws.com:3306/interview_rights";
-        String username = "appuser";
-        String password = "interviewRight@"; // apna DB password daalna
+	        return args -> {
 
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+	            if (!userRepository.existsByEmail("superadmin@interviewrights.com")) {
 
-            String sql = "INSERT INTO users (id, email, password, role, first_name, last_name, is_active, is_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	                User user = new User();
+	                user.setEmail("superadmin@interviewrights.com");
+	                user.setPassword(passwordEncoder.encode("Admin@123"));
+	                user.setRole("ROLE_ADMIN");
+	                user.setFirstName("Super");
+	                user.setLastName("Admin");
+	                user.setActive(true);
+	                user.setDeleted(false);
 
-            PreparedStatement ps = conn.prepareStatement(sql);
+	                userRepository.save(user);
 
-            ps.setString(1, UUID.randomUUID().toString());
-            ps.setString(2, "superadmin@interviewrights.com");
-
-            // 🔥 password already encoded hona chahiye
-            ps.setString(3, "$2a$10$Dow1X9jVh3k8pZK1z8rT5uR5kY5v6Yv1ZyYQXx1YwF9sZy8sQzY2e"); // Admin@123
-
-            ps.setString(4, "ROLE_ADMIN");
-            ps.setString(5, "super");
-            ps.setString(6, "admin");
-
-            ps.setBoolean(7, true);
-            ps.setBoolean(8, false);
-
-            ps.executeUpdate();
-
-            System.out.println("✅ Admin user inserted successfully");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+	                System.out.println("✅ Super Admin created.");
+	            } else {
+	                System.out.println("✅ Super Admin already exists.");
+	            }
+	        };
+	    }
+	}
