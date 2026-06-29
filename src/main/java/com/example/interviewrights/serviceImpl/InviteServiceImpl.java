@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,9 +41,12 @@ public class InviteServiceImpl implements InviteService {
 
 	@Autowired
 	private UserRepository userRepo;
-	
+
 	@Autowired
 	S3Service s3Service;
+
+	@Value("${app.base-url}")
+	private String baseUrl;
 
 	@Override
 	public Page<UserInvite> getAllInvites(String email, String status, int page, int size) {
@@ -51,48 +56,40 @@ public class InviteServiceImpl implements InviteService {
 		String currentUserEmail = auth.getName();
 
 		User currentUser = userRepo.findByEmail(currentUserEmail)
-		        .orElseThrow(() -> new RuntimeException("User not found"));
-		
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
 		return repo.findAll(UserInviteSpecification.filter(email, status, currentUser), pageable);
 	}
 
-	
-	
 	@Override
 	public String inviteUser(InviteRequest request) {
 		String token = UUID.randomUUID().toString();
 
 		String email = request.getEmail();
-		
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String currentUserEmail = auth.getName();
 		User currentUser = userRepo.findByEmail(currentUserEmail)
-		        .orElseThrow(() -> new RuntimeException("User not found"));
-		
-	    // Check user already exists
-	    if (userRepo.existsByEmail(email)) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "User with this email already exists"
-	        );
-	    }
+				.orElseThrow(() -> new RuntimeException("User not found"));
 
-	    // Check invite already sent
-	    Optional<UserInvite> existingInvite = inviteRepo.findByEmailAndInvitedBy(email,currentUser);
+		// Check user already exists
+		if (userRepo.existsByEmail(email)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this email already exists");
+		}
 
-	    if (existingInvite.isPresent()) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Invite already sent to this email"
-	        );
-	    }
-		
+		// Check invite already sent
+		Optional<UserInvite> existingInvite = inviteRepo.findByEmailAndInvitedBy(email, currentUser);
+
+		if (existingInvite.isPresent()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invite already sent to this email");
+		}
+
 		UserInvite invite = new UserInvite();
 		invite.setEmail(request.getEmail());
 		invite.setRole("ROLE_USER");
 		invite.setInviteToken(token);
 		invite.setExpiryTime(LocalDateTime.now().plusHours(24));
-		invite.setUrl("http://localhost:8080/admin/register-invite.html?token=" + token);
+		invite.setUrl(baseUrl+"/admin/register-invite.html?token=" + token);
 		invite.setInvitedBy(currentUser);
 		inviteRepo.save(invite);
 
@@ -101,8 +98,8 @@ public class InviteServiceImpl implements InviteService {
 		user.setRole("ROLE_USER");
 		user.setCreatedFrom(currentUser);
 		userRepo.save(user);
-		
-		String inviteUrl = "http://localhost:8080/admin/register-invite.html?token=" + token;
+
+		String inviteUrl = baseUrl+"/admin/register-invite.html?token=" + token;
 
 		return inviteUrl;
 	}
@@ -110,17 +107,11 @@ public class InviteServiceImpl implements InviteService {
 	@Override
 	public ResponseEntity<String> registerViaInvite(InviteRegisterRequest request) {
 
-		UserInvite invite = inviteRepo.findByInviteToken(request.getToken())
-		        .orElseThrow(() -> new ResponseStatusException(
-		                HttpStatus.BAD_REQUEST,
-		                "Invalid or expired invite token"
-		        ));
+		UserInvite invite = inviteRepo.findByInviteToken(request.getToken()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired invite token"));
 
 		User user = userRepo.findByEmail(invite.getEmail())
-		        .orElseThrow(() -> new ResponseStatusException(
-		                HttpStatus.NOT_FOUND,
-		                "User not found for this invite"
-		        ));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for this invite"));
 		user.setFirstName(request.getFirstName());
 		user.setLastName(request.getLastName());
 		user.setMobile(request.getMobile());
@@ -136,10 +127,10 @@ public class InviteServiceImpl implements InviteService {
 		user.setGithubUrl(request.getGithubUrl());
 		user.setTechnology(request.getTechnology());
 		user.setRole("ROLE_USER");
-		  if (request.getProfilePic() != null && !request.getProfilePic().isEmpty()) {
-	            String profilePicUrl = s3Service.uploadFile(request.getProfilePic());
-	            user.setProfilePic(profilePicUrl);   // S3 URL or object key
-	        }
+		if (request.getProfilePic() != null && !request.getProfilePic().isEmpty()) {
+			String profilePicUrl = s3Service.uploadFile(request.getProfilePic());
+			user.setProfilePic(profilePicUrl); // S3 URL or object key
+		}
 		userRepo.save(user);
 
 		invite.setUsed(true);
@@ -164,62 +155,52 @@ public class InviteServiceImpl implements InviteService {
 	@Override
 	public User getByToken(String token) {
 		if (token == null || token.isBlank()) {
-	        throw new ResponseStatusException(
-	                HttpStatus.BAD_REQUEST,
-	                "Token is required"
-	        );
-	    }
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token is required");
+		}
 
-	    UserInvite invite = inviteRepo.findByInviteToken(token)
-	            .orElseThrow(() -> new ResponseStatusException(
-	                    HttpStatus.BAD_REQUEST,
-	                    "Invalid or expired invite link"
-	            ));
+		UserInvite invite = inviteRepo.findByInviteToken(token).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired invite link"));
 
-	    return userRepo.findByEmail(invite.getEmail())
-	            .orElseThrow(() -> new ResponseStatusException(
-	                    HttpStatus.NOT_FOUND,
-	                    "User not found for this invite"
-	            ));
+		return userRepo.findByEmail(invite.getEmail())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for this invite"));
 	}
 
 	@Override
 	public void deleteInvite(UUID id) {
-		
+
 		Optional<UserInvite> findById = inviteRepo.findById(id);
-		if(findById.isPresent()) {
-			
+		if (findById.isPresent()) {
+
 			Optional<User> findByEmail = userRepo.findByEmail(findById.get().getEmail());
-			if(findById.isPresent()) {
+			if (findById.isPresent()) {
 				userRepo.deleteById(findById.get().getId());
 			}
 		}
-		inviteRepo.deleteById(id); 
+		inviteRepo.deleteById(id);
 	}
 
 	@Override
 	public String regenerateInvite(String email) {
 
-		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+			throw new RuntimeException("User is not authenticated");
+		}
 		String currentUserEmail = auth.getName();
-		User currentUser = userRepo.findByEmail(currentUserEmail)
-		        .orElseThrow(() -> new RuntimeException("User not found"));
-		
-	    UserInvite invite = inviteRepo.findByEmailAndInvitedBy(email,currentUser)
-	            .orElseThrow(() -> new RuntimeException("Invite not found"));
+		User currentUser = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
-	    // update token
-	    invite.setInviteToken(UUID.randomUUID().toString());
+		UserInvite invite = inviteRepo.findByEmailAndInvitedBy(email, currentUser)
+				.orElseThrow(() -> new RuntimeException("Invite not found"));
 
-	    // update expiry time (example: +24 hours)
-	    invite.setExpiryTime(LocalDateTime.now().plusHours(24));
+		// update token
+		invite.setInviteToken(UUID.randomUUID().toString());
 
-	    inviteRepo.save(invite);
+		// update expiry time (example: +24 hours)
+		invite.setExpiryTime(LocalDateTime.now().plusHours(24));
 
-	    return "http://localhost:8080/register.html?token=" + invite.getInviteToken();
+		inviteRepo.save(invite);
+
+		return baseUrl+"/register.html?token=" + invite.getInviteToken();
 	}
-	
-	
 
 }

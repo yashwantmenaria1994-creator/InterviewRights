@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class InterviewServiceImpl implements InterviewService {
 	@Autowired
 	private EmailService emailService;
 
+	@Value("${app.base-url}")
+	private String baseUrl;
+	
 	public void scheduleInterview(InterviewRequest req) {
 
 		String token = UUID.randomUUID().toString();
@@ -52,12 +56,12 @@ public class InterviewServiceImpl implements InterviewService {
 
 		repo.save(interview);
 		// 📩 Send Email
-	    String secureLink = "http://localhost:8080/interview-room.html?role=candidate&room=26&token=" + token;
-	    String interviewerLink = "http://localhost:8080/interview-room.html?role=interviewer&room=26";
+	    String secureLink = baseUrl+"/interview-room.html?role=candidate&room=26&token=" + token;
+	    String interviewerLink = baseUrl+"/interview-room.html?role=interviewer&room=26";
 
 		//emailService.sendInterviewMail(req);
 	    emailService.sendInterviewMail(req.getEmail(), secureLink);
-	    emailService.sendInterviewMail(req.getInterviewerEmail(), interviewerLink);
+	    emailService.sendInterviewMailForInterviewer(req.getInterviewerEmail(), interviewerLink);
 
 	}
 

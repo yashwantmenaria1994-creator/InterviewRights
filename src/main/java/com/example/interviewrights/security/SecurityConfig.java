@@ -33,7 +33,8 @@ public class SecurityConfig {
 						"/admin/candidate.html", "/admin/edit-candidate.html", "/admin/invite-user.html",
 						"/admin/register-invite.html", "/myProfile.html", "/admin/css/**", "/css/**", "/js/**",
 						"/admin/js/**", "/models/**", "interview-room.html", "interview-terminated.html",
-						"/topic/offer", "/topic/answer", "/topic/ice", "/signal","/api/trust/results","interview-results.html","/api/trust/finish","/api/face/verify")
+						"/topic/offer", "/topic/answer", "/topic/ice", "/signal", "/api/trust/results",
+						"interview-results.html", "/api/trust/finish", "/api/face/verify","/admin/findCandidates.html","/api/admin/candidates/allPublicCandidates")
 				.permitAll().requestMatchers("/signal/**").permitAll()
 
 				.requestMatchers("/topic/**").permitAll()
@@ -45,7 +46,7 @@ public class SecurityConfig {
 				.anyRequest().permitAll())
 
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-				http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}

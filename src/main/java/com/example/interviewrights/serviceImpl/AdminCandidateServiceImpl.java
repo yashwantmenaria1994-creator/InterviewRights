@@ -23,7 +23,7 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 
 	@Autowired
 	private S3Service s3Service;
-	
+
 	@Override
 	public Page<CandidateDto> getCandidates(int page, int size, String keyword) {
 
@@ -70,10 +70,10 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 		existing.setVisaExpiry(updatedUser.getVisaExpiry());
 		existing.setPassportNumber(updatedUser.getPassportNumber());
 		existing.setCitizenshipCountry(updatedUser.getCitizenshipCountry());
-		  if (updatedUser.getProfilePic() != null && !updatedUser.getProfilePic().isEmpty()) {
-	            String profilePicUrl = s3Service.uploadFile(updatedUser.getProfilePic());
-	            existing.setProfilePic(profilePicUrl);   // S3 URL or object key
-	        }
+		if (updatedUser.getProfilePic() != null && !updatedUser.getProfilePic().isEmpty()) {
+			String profilePicUrl = s3Service.uploadFile(updatedUser.getProfilePic());
+			existing.setProfilePic(profilePicUrl); // S3 URL or object key
+		}
 		return userRepository.save(existing);
 	}
 
@@ -87,4 +87,30 @@ public class AdminCandidateServiceImpl implements AdminCandidateService {
 		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Candidate not found"));
 	}
 
+	@Override
+	public Page<CandidateDto> getPublicCandidates(
+	        int page,
+	        int size,
+	        String keyword) {
+
+	    Page<User> users;
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        users = userRepository
+	                .findPublicCandidatesByKeyword(
+	                        keyword,
+	                        PageRequest.of(page, size));
+	    } else {
+	        users = userRepository
+	                .findByCreatedFromIsNull(
+	                        PageRequest.of(page, size));
+	    }
+
+	    return users.map(user -> new CandidateDto(
+	            user.getId(),
+	            user.getFirstName(),
+	            user.getEmail(),
+	            user.getRole(),
+	            user.isActive()));
+	}
 }

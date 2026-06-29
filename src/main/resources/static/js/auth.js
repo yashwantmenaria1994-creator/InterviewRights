@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:8080/api/auth";
+const BASE_URL = "http://interviewright-332017328.us-east-1.elb.amazonaws.com:8080";
+const API_URL = `${BASE_URL}/api/auth`;
 
 /* ================= REGISTER ================= */
 function register() {

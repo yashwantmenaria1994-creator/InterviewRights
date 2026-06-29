@@ -61,6 +61,14 @@ public class AdminCandidateController {
 	        return ResponseEntity.ok("Candidate deleted successfully");
 	    }
 	    
+	    @RequestMapping("/allPublicCandidates")
+	    public ResponseEntity<Page<CandidateDto>> getPublicCandidates(
+	            @RequestParam(defaultValue = "0") int page,
+	            @RequestParam(defaultValue = "10") int size,
+	            @RequestParam(required = false) String keyword) {
+
+	        return ResponseEntity.ok(service.getPublicCandidates(page, size, keyword));
+	    }
 	   
 	}
 	

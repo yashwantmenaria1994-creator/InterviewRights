@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Candidates</title>
+
+	<link rel="stylesheet" href="/admin/css/admin.css">
+
+</head>
+
+<body>
+
+	<!-- HEADER -->
+	<div class="header">
+		<h2>Interview-Rights Admin</h2>
+		<div class="user-info" id="userEmail">
+		</div>
+		<button class="logout-btn" onclick="logout()">Logout</button>
+
+	</div>
+	<div class="container">
+
+		<div class="sidebar">
+			<a href="/admin/admin-dashboard.html">Dashboard</a>
+			<a href="/admin/candidate.html">Candidates</a>
+			<a href="/admin/invite-user.html">Invite</a>
+			<a href="/interview-results.html">Candidate Result</a>
+			<a href="/admin/findCandidates.html">Find Candidate</a>
+
+
+		</div>
+
+		<div class="content">
+
+			<h2>Public Candidates</h2>
+
+			<input type="text" id="search" placeholder="Search by name, email, skill" onkeyup="loadCandidates()" />
+
+			<div class="table-container">
+				<table class="admin-table">
+					<thead>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Skills</th>
+						<th>Status</th>
+						</tr>
+					</thead>
+
+					<tbody id="candidateBody"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+		const token = localStorage.getItem("token");
+
+		if (!token) {
+			window.location.href = "login.html";
+		}
+
+		async function loadCandidates(page = 0) {
+
+			const keyword =
+				document.getElementById("search").value;
+
+			const response = await fetch(
+				`/api/admin/candidates/allPublicCandidates?page=${page}&size=10&keyword=${keyword}`,
+				{
+					method: "GET",
+					headers: {
+						"Authorization": "Bearer " + token,
+						"Content-Type": "application/json"
+					}
+				}
+			);
+
+			if (response.status === 401) {
+				localStorage.removeItem("token");
+				window.location.href = "login.html";
+				return;
+			}
+
+			const data = await response.json();
+
+			let rows = "";
+
+			data.content.forEach(candidate => {
+
+				rows += `
+            <tr>
+                <td>${candidate.firstName} ${candidate.lastName ?? ''}</td>
+                <td>${candidate.email}</td>
+                <td>${candidate.skills?.join(", ") || ""}</td>
+                <td>${candidate.active ? "Active" : "Inactive"}</td>
+            </tr>
+        `;
+			});
+
+			document.getElementById("candidateBody").innerHTML = rows;
+		}
+
+		loadCandidates();
+
+	</script>
+
+</body>
+
+</html>

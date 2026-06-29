@@ -8,9 +8,9 @@ public class InsertAdminUser {
 
     public static void main(String[] args) {
 
-        String url = "jdbc:mysql://localhost:3306/interview_rights";
-        String username = "root";
-        String password = "root"; // apna DB password daalna
+        String url = "jdbc:mysql://mysqldb.c2j2i6qmglma.us-east-1.rds.amazonaws.com:3306/interview_rights";
+        String username = "appuser";
+        String password = "interviewRight@"; // apna DB password daalna
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
 

@@ -32,7 +32,7 @@ body {
 }
 
 .sidebar a:hover {
-    background: #1f2937;
+    background: #f39c12;
 }
 
 .content {
@@ -53,7 +53,7 @@ body {
 }
 
 .admin-table th {
-    background: #2c3e50;
+    background: #f39c12;
     color: white;
     padding: 12px;
     text-align: left;
@@ -133,7 +133,7 @@ input, select {
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #f39c12;
 }
 .logout-btn {
     background: #ff4d4d;
@@ -295,7 +295,7 @@ input, select {
 
 /* ===== CARDS ===== */
 .card {
-    background: linear-gradient(135deg, #ffffff, #f1f2f6);
+    background: linear-gradient(135deg, #27ae60, #f1f2f6);
     border-radius: 14px;
     padding: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -315,7 +315,7 @@ input, select {
     font-size: 28px;
     font-weight: bold;
     margin-top: 10px;
-    color: #2f3640;
+    color: #c0392b;
 }
 
 /* ===== TABLE SECTION ===== */

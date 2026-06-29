@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/admin/css/admin.css">
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="/admin/css/admin.css">
 </head>
+
 <body>
 
-<!-- HEADER -->
+	<!-- HEADER -->
 	<div class="header">
 		<h2>Interview-Rights Admin</h2>
 		<div class="user-info" id="userEmail">
@@ -15,40 +17,44 @@
 
 	</div>
 
-<!-- MAIN -->
-<div class="container">
+	<!-- MAIN -->
+	<div class="container">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <a href="/admin/admin-dashboard.html">Dashboard</a>
-        <a href="/admin/candidate.html">Candidates</a>
-        <a href="/admin/invite-user.html">Invite</a>
+		<!-- SIDEBAR -->
+		<div class="sidebar">
+			<a href="/admin/admin-dashboard.html">Dashboard</a>
+			<a href="/admin/candidate.html">Candidates</a>
+			<a href="/admin/invite-user.html">Invite</a>
 			<a href="/interview-results.html">candidate Result</a>
-    </div>
+			<a href="/admin/findCandidates.html">Find Candidate</a>
 
-    <!-- CONTENT -->
-    <div class="content">
-        <h3>Welcome Admin</h3>
-            <h2 class="page-title">Dashboard Overview</h2>
 
-    <!-- ===== STATS CARDS ===== -->
-    <div class="stats-grid">
+		</div>
 
-        <div class="card">
-            <h4>Scheduled Interviews</h4>
-            <p id="scheduledCount">0</p>
-        </div>
+		<!-- CONTENT -->
+		<div class="content">
+			<h3>Welcome Admin</h3>
+			<h2 class="page-title">Dashboard Overview</h2>
 
-        <div class="card">
-            <h4>Completed Interviews</h4>
-            <p id="completedCount">0</p>
-        </div>
+			<!-- ===== STATS CARDS ===== -->
+			<div class="stats-grid">
 
-     </div>
+				<div class="card">
+					<h4>Scheduled Interviews</h4>
+					<p id="scheduledCount">0</p>
+				</div>
 
-    <!-- ===== RECENT INTERVIEWS ===== -->
-</div>
+				<div class="card">
+					<h4>Completed Interviews</h4>
+					<p id="completedCount">0</p>
+				</div>
+
+			</div>
+
+			<!-- ===== RECENT INTERVIEWS ===== -->
+		</div>
 		<script src="/admin/js/admin-common.js"></script>
 
 </body>
+
 </html>

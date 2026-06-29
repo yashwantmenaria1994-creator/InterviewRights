@@ -8,4 +8,6 @@ public interface EmailService {
 	void sendInterviewMail(InterviewRequest req);
 
 	void sendInterviewMail(String email, String secureLink);
+
+	void sendInterviewMailForInterviewer(String interviewerEmail, String interviewerLink);
 }

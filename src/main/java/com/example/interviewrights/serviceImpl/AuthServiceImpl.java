@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.interviewrights.entity.User;
 import com.example.interviewrights.entity.UserSession;
+import com.example.interviewrights.enums.CandidateOwnershipStatus;
 import com.example.interviewrights.repository.SessionRepository;
 import com.example.interviewrights.repository.UserRepository;
 import com.example.interviewrights.request.LoginRequest;
@@ -39,6 +41,9 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+	@Value("${app.base-url}")
+	private String baseUrl;
 
 	public void register(@Valid RegisterRequest request) {
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -51,6 +56,8 @@ public class AuthServiceImpl implements AuthService {
 		user.setEmail(request.getEmail());
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setRole("ROLE_USER");
+		user.setCreatedFrom(null);
+		user.setOwnershipStatus(CandidateOwnershipStatus.PUBLIC);
 		userRepository.save(user);
 	}
 
@@ -107,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
 
 			userRepository.save(user);
 
-			String resetLink = "http://localhost:8080/reset-password.html?token=" + token;
+			String resetLink = baseUrl+"/reset-password.html?token=" + token;
 
 			emailService.sendResetPasswordEmail(user.getEmail(), resetLink);
 
