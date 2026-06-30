@@ -347,10 +347,10 @@
 				</div>
 
 			</div>
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<label>Upload Resume</label>
 				<input type="file" id="uploadResume">
-			</div>
+			</div> -->
 
 			<button class="btn-primary" type="submit">Submit</button>
 
@@ -403,25 +403,26 @@
 		})
 			.then(res => res.json())
 			.then(data => {
-				document.getElementById("firstName").value = data.firstName;
-				document.getElementById("lastName").value = data.lastName;
-				document.getElementById("email").value = data.email;
-				document.getElementById("mobile").value = data.mobile;
-				document.getElementById("role").value = data.role;
-				document.getElementById("drivingLicense").value = data.drivingLicense;
-				document.getElementById("countryCode").value = data.countryCode;
-				document.getElementById("gender").value = data.gender;
-				document.getElementById("dob").value = data.dob;
-				document.getElementById("address1").value = data.address1;
-				document.getElementById("address2").value = data.address2;
-				document.getElementById("postalCode").value = data.postalCode;
-				document.getElementById("technology").value = data.technology;
-				document.getElementById("experience").value = data.experience;
-				document.getElementById("candidateStatus").value = data.candidateStatus;
-				document.getElementById("linkedinUrl").value = data.linkedinUrl;
-				document.getElementById("githubUrl").value = data.githubUrl;
-				document.getElementById("uploadResume").value = data.uploadResume;
-				document.getElementById("portfolioUrl").value = data.portfolioUrl;
+				document.getElementById("firstName").value = data.firstName ?? "";
+				document.getElementById("lastName").value = data.lastName ?? "";
+				document.getElementById("email").value = data.email ?? "";
+				document.getElementById("mobile").value = data.mobile ?? "";
+				document.getElementById("drivingLicense").value = data.drivingLicense ?? "";
+				document.getElementById("countryCode").value = data.countryCode ?? "";
+				document.getElementById("gender").value = data.gender ?? "";
+				document.getElementById("dob").value = data.dob ?? "";
+				document.getElementById("noticePeriod").value = data.noticePeriod ?? "";
+				document.getElementById("technology").value = data.technology ?? "";
+				document.getElementById("address1").value = data.address1 ?? "";
+				document.getElementById("address2").value = data.address2 ?? "";
+				document.getElementById("postalCode").value = data.postalCode ?? "";
+				document.getElementById("experience").value = data.experience ?? "";
+				document.getElementById("linkedinUrl").value = data.linkedinUrl ?? "";
+				document.getElementById("githubUrl").value = data.githubUrl ?? "";
+				document.getElementById("workAuthorization").value = user.workAuthorization;
+				document.getElementById("sponsorshipRequired").value = user.sponsorshipRequired;
+
+
 			});
 
 
@@ -453,7 +454,13 @@
 					experience: experience.value,
 					linkedinUrl: linkedinUrl.value,
 					githubUrl: githubUrl.value,
-					noticePeriod: noticePeriod.value
+					noticePeriod: noticePeriod.value,
+					workAuthorization: document.getElementById("workAuthorization").value,
+					sponsorshipRequired: document.getElementById("sponsorshipRequired").value,
+					visaType: document.getElementById("visaType").value,
+					visaExpiry: document.getElementById("visaExpiry").value,
+					passportNumber: document.getElementById("passportNumber").value,
+					citizenshipCountry: document.getElementById("citizenshipCountry").value
 				})
 			})
 				.then(res => {

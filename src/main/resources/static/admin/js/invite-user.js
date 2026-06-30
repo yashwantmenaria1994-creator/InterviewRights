@@ -130,9 +130,7 @@ function renderTable(invites) {
                     </span>
                 </td>
                 <td>
-                    <button onclick="regenerateInvite('${inv.email}')" 
-                        class="btn-action regen">Regenerate</button>
-
+                   
                     <button onclick="deleteInvite('${inv.id}')" 
                         class="btn-action delete">Delete</button>
                 </td>

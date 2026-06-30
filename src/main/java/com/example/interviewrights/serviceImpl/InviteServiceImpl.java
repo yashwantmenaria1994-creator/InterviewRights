@@ -126,6 +126,11 @@ public class InviteServiceImpl implements InviteService {
 		user.setGender(request.getGender());
 		user.setGithubUrl(request.getGithubUrl());
 		user.setTechnology(request.getTechnology());
+		user.setLinkedinUrl(request.getLinkedinUrl());
+		user.setNoticePeriod(request.getNoticePeriod());
+		user.setPostalCode(request.getPostalCode());
+		user.setWorkAuthorization(request.getWorkAuthorization());
+		user.setSponsorshipRequired(request.getSponsorshipRequired());
 		user.setRole("ROLE_USER");
 		if (request.getProfilePic() != null && !request.getProfilePic().isEmpty()) {
 			String profilePicUrl = s3Service.uploadFile(request.getProfilePic());

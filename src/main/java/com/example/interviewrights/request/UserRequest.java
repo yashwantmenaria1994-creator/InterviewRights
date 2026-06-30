@@ -20,7 +20,7 @@ public class UserRequest {
 	private String firstName;
 	private String lastName;
 	private MultipartFile  profilePic;
-	private MultipartFile uploadResume;
+	//private MultipartFile uploadResume;
 	private String drivingLicense;
 	private String countryCode;
 	private String gender;

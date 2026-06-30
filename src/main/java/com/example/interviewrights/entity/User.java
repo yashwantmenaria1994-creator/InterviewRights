@@ -42,7 +42,7 @@ public class User extends BaseEntity {
 	private Long mobile;
 	private String resetToken;
 	private LocalDateTime tokenExpiry;
-
+	private String noticePeriod;
 	private String technology;
 	private String experience;
 	private String candidateStatus;

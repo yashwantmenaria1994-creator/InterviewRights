@@ -32,5 +32,6 @@ public class InviteRegisterRequest {
 	private String githubUrl;
 	private String uploadResume;
 	private Boolean accountLocked;
-
+	private String workAuthorization;
+	private String sponsorshipRequired;
 }
