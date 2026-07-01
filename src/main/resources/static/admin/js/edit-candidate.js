@@ -91,7 +91,6 @@ function updateCandidate() {
 	formData.append("visaExpiry", document.getElementById("visaExpiry").value);
 	formData.append("passportNumber", document.getElementById("passportNumber").value);
 	formData.append("citizenshipCountry", document.getElementById("citizenshipCountry").value);
-	formData.append("profilePic", document.getElementById("profilePic").value);
 
 	// Files
 	const profilePic = document.getElementById("profilePic").files[0];
